@@ -13,7 +13,6 @@
   :description "A prototypical implementation of Distel's EL Exploration Algorithm"
   :url "http://www.math.tu-dresden.de/~borch/conexp-clj/"
   :dependencies [[conexp-clj "0.0.7-alpha-SNAPSHOT"]]
-  :dev-dependencies [[swank-clojure "1.4.0"]]
   :keep-non-project-classes true
   :jvm-opts ["-server", "-Xmx1g"]
   :warn-on-reflection true)
