@@ -65,7 +65,7 @@
          (fallback term-1 term-2))))
 
 (defn normalize-EL-gfp-term
-  "Normalizes a given EL-gfp term."
+  "Normalizes a given EL-gfp term."     ;this is simple rewriting using the semantics of ⊓
   [term]
   (cond
    (and (vector? term)

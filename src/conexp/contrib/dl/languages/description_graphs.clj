@@ -28,13 +28,12 @@
   (.vertices description-graph))
 
 (defn neighbours
-  "Returns a function mapping vertices to sets of pairs of roles and
-  names."
+  "Returns the function mapping vertices to sets of pairs of roles and names."
   [^Description-Graph description-graph]
   (.neighbours description-graph))
 
 (defn vertex-labels
-  "Returns vertex labeling function of given description graph."
+  "Returns the vertex labeling function of given description graph."
   [^Description-Graph description-graph]
   (.vertex-labels description-graph))
 
