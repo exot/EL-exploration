@@ -8,11 +8,11 @@
 
 (ns conexp.contrib.dl.util.graphs
   (:use conexp.base)
-  (:require [clojure.contrib.graph :as graph]))
+  (:require [conexp.util.graph :as graph]))
 
 (ns-doc
  "A custom implementation of graph algorithms on top of
- clojure.contrib.graph.")
+ conexp.util.graph.")
 
 ;;;
 
