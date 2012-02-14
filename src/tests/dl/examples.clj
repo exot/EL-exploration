@@ -18,9 +18,8 @@
   (:use clojure.test))
 
 (ns-doc
- "Defines example data for testing and show how to use
-  conexp.contrib.dl. Don't change anything here since the tests rely
-  on this.")
+ "Defines example data for testing and show how to use this program.
+ Don't change anything here since the tests rely on this.")
 
 ;;; Initial Example
 

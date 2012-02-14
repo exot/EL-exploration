@@ -12,7 +12,6 @@
   (:use [conexp.io.util :only (with-in-reader)]
         [clojure.walk :only (walk)])
   (:use conexp.main
-        conexp.contrib.profiler
         dl.framework.syntax
         dl.framework.boxes
         dl.framework.semantics
