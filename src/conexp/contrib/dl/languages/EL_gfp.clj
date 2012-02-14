@@ -15,7 +15,7 @@
         conexp.contrib.dl.languages.description-graphs
         conexp.contrib.dl.languages.EL-gfp-rewriting))
 
-(ns-doc "Defines EL-gfp with lcs, msc and subsumption.")
+(ns-doc "Definitions for the description logic EL-gfp.")
 
 ;;; EL-gfp
 
@@ -120,6 +120,53 @@
     (if (acyclic? tbox)
       (definition-expression (first (tbox-definitions tbox)))
       (make-dl-expression-nc (interpretation-language model) [tbox target]))))
+
+;;; unravelling
+
+(defn- depth-bounded-description-graph  ;this is so ugly
+  "Given a description graph «graph», a node «target» in this graph and an integer k,
+   returns the unraveling of the graph starting at target of depth at most k."
+  [graph target k]
+  (let [renamed (atom {}),
+        neighs  (atom {})]
+    (letfn [(collect [node current-depth] ;constraint: returns new name of node
+              (let [new-name (gensym (str node "-"))]
+                (swap! renamed assoc new-name node)
+                (when (< 0 current-depth)
+                  (doseq [[r v] ((neighbours graph) node)]
+                    (swap! neighs
+                           update-in [new-name]
+                           conj [r (collect v (dec current-depth))])))
+                new-name))]
+      (let [target    (if (>= k 0)
+                        (collect target k)
+                        nil),
+            vertices  (keys @renamed),
+            labels    (fn [x]
+                        ((vertex-labels graph) (@renamed x)))]
+        (if target
+          [(make-description-graph (graph-language graph)
+                                   vertices
+                                   @neighs
+                                   labels),
+           target]
+          [(make-description-graph (graph-language graph)
+                                   '[A]
+                                   {}
+                                   {}),
+           'A])))))
+
+(defn EL-gfp-unravel
+  "Returns the k-unravelling of dl-expr, i.e. the most specific concept description
+  subsuming dl-expr that has role depth at most k."
+  [dl-expr k]
+  (let [[tbox target] (expression-term (ensure-EL-gfp-concept dl-expr)),
+        [graph target] (depth-bounded-description-graph (tbox->description-graph tbox)
+                                                        target
+                                                        k),
+        [tbox target] (reduce-ttp [(description-graph->tbox graph) target])]
+    ;; the resulting tbox is acyclic and only contains one definition
+    (definition-expression (first (tbox-definitions tbox)))))
 
 ;;;
 
