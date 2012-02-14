@@ -554,6 +554,44 @@
   (let [sim-sets (efficient-simulator-sets G-1 G-2)]
     (contains? (get sim-sets v) w)))
 
+;;; unraveling
+
+(defn depth-bounded-description-graph
+  "Given a description graph «graph», a node «target» in this graph and an integer k,
+  returns the unraveling of the graph starting at target of depth at most k.  The result
+  returned is a vector of two entries.  The first entry is the unravelled description
+  graph and the second entry is the renamed root node corresponding to the initially given
+  target."
+  [graph target k]
+  (let [renamed (atom {}),
+        neighs  (atom {})]
+    (letfn [(collect [node current-depth] ;constraint: returns new name of node
+              (let [new-name (gensym (str node "-"))]
+                (swap! renamed assoc new-name node)
+                (when (< 0 current-depth)
+                  (doseq [[r v] ((neighbours graph) node)]
+                    (swap! neighs
+                           update-in [new-name]
+                           conj [r (collect v (dec current-depth))])))
+                new-name))]
+      (let [target    (if (>= k 0)
+                        (collect target k)
+                        nil),
+            vertices  (keys @renamed),
+            labels    (fn [x]
+                        ((vertex-labels graph) (@renamed x)))]
+        (if target
+          [(make-description-graph (graph-language graph)
+                                   vertices
+                                   @neighs
+                                   labels),
+           target]
+          [(make-description-graph (graph-language graph)
+                                   '[A]
+                                   {}
+                                   {}),
+           'A])))))
+
 ;;;
 
 nil

@@ -123,39 +123,6 @@
 
 ;;; unravelling
 
-(defn- depth-bounded-description-graph  ;this is so ugly
-  "Given a description graph «graph», a node «target» in this graph and an integer k,
-   returns the unraveling of the graph starting at target of depth at most k."
-  [graph target k]
-  (let [renamed (atom {}),
-        neighs  (atom {})]
-    (letfn [(collect [node current-depth] ;constraint: returns new name of node
-              (let [new-name (gensym (str node "-"))]
-                (swap! renamed assoc new-name node)
-                (when (< 0 current-depth)
-                  (doseq [[r v] ((neighbours graph) node)]
-                    (swap! neighs
-                           update-in [new-name]
-                           conj [r (collect v (dec current-depth))])))
-                new-name))]
-      (let [target    (if (>= k 0)
-                        (collect target k)
-                        nil),
-            vertices  (keys @renamed),
-            labels    (fn [x]
-                        ((vertex-labels graph) (@renamed x)))]
-        (if target
-          [(make-description-graph (graph-language graph)
-                                   vertices
-                                   @neighs
-                                   labels),
-           target]
-          [(make-description-graph (graph-language graph)
-                                   '[A]
-                                   {}
-                                   {}),
-           'A])))))
-
 (defn EL-gfp-unravel
   "Returns the k-unravelling of dl-expr, i.e. the most specific concept description
   subsuming dl-expr that has role depth at most k."
