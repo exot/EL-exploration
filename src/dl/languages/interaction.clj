@@ -28,7 +28,7 @@
       false
       true)))
 
-(defn extend-model-by-contradiction
+(defn extend-model-by-counterexample
   "Extends given model by asking an expert (the user) to extend model
   to a connected supermodel in which the given subsumption does not
   hold."

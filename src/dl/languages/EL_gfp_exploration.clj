@@ -86,7 +86,7 @@
                                     (if (or (obviously-true? susu)
                                             (not (expert-refuses? susu)))
                                       model
-                                      (recur (extend-model-by-contradiction model susu))))),
+                                      (recur (extend-model-by-counterexample model susu))))),
                    all-P_k-closure
                                 (model-closure next-model all-P_k),
 
