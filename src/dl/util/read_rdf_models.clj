@@ -225,11 +225,11 @@
                                                     [role roles])
                                             (constantly true)
                                             (constantly true)),
-        instances (set (flatten (vals relations))),
+        ins       (set (flatten (vals relations))),
         concepts  (role-map->concept-map
                    (read-rdf-lines-from-file instances
                                              (constantly true)
-                                             #(contains? instances %)
+                                             #(contains? ins %)
                                              #(not (re-find #"owl#Thing" %))))]
     [(prepare-for-conexp concepts), (prepare-for-conexp relations)]))
 
