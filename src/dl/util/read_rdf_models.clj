@@ -311,6 +311,47 @@
                               roles
                               :base-lang EL-gfp)))
 
+;;; Programming Language Model
+
+(defn read-programming-language-model
+  "Reads the programming language model from the given dbpedia data sets."
+  [properties instances]
+  (let [[influenced influenced-by] (pvalues (read-rdf-lines-from-file properties
+                                                                      #{"http://dbpedia.org/ontology/influenced"}
+                                                                      (constantly true)
+                                                                      (constantly true))
+                                            (read-rdf-lines-from-file properties
+                                                                      #{"http://dbpedia.org/ontology/influencedBy"}
+                                                                      (constantly true)
+                                                                      (constantly true))),
+
+        influence (set (concat (first (vals influenced))
+                                (map (fn [[a b]] [b a])
+                                     (first (vals influenced-by))))),
+
+        individuals (set (flatten (seq influence)))
+
+        concepts  (role-map->concept-map
+                   (read-rdf-lines-from-file instances
+                                             (constantly true)
+                                             #(contains? individuals %)
+                                             #(re-find #"ProgrammingLanguage" %))),
+
+        individuals (set (flatten (vals concepts))),
+
+        concepts  (role-map->concept-map
+                   (read-rdf-lines-from-file instances
+                                             (constantly true)
+                                             #(contains? individuals %)
+                                             #(not (re-find #"owl#Thing" %)))),
+
+        influence (set-of [x y] | [x y] influence :when (and (contains? individuals x)
+                                                             (contains? individuals y)))]
+
+    (hash-map->interpretation (prepare-for-conexp concepts)
+                              (prepare-for-conexp {"influenced" influence})
+                              :base-lang EL-gfp)))
+
 ;;;
 
 nil
