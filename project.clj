@@ -9,7 +9,7 @@
 ;;;
 
 (defproject EL-exploration (.trim #=(slurp "VERSION"))
-  :min-lein-version "1.6.1.1"
+  :min-lein-version "1.3.0"
   :description "A prototypical implementation of Distel's EL Exploration Algorithm"
   :url "http://www.math.tu-dresden.de/~borch/conexp-clj/"
   :dependencies [[conexp-clj "0.0.7-alpha-SNAPSHOT"]]
