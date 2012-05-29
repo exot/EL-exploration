@@ -217,9 +217,10 @@
 
 ;;; DBpedia Model
 
-(defn- read-dbpedia-triples [properties instances roles]
+(defn- read-dbpedia-triples
   "Reads model from wikipedia entries. roles can be any quoted sequence of child, father, mother,
   influenced, influencedBy, relation, relative, spouse, partner, opponent, ..."
+  [properties instances roles]
   (let [relations (read-rdf-lines-from-file properties
                                             (set-of (str "http://dbpedia.org/ontology/" role)
                                                     [role roles])
