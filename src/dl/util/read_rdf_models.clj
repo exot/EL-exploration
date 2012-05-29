@@ -159,7 +159,7 @@
         thread (Thread. #(let [result (time (explore model))]
                            (time (doseq [gci result]
                                    (dosync (alter resulting-gcis conj gci))))))]
-    (println "Staring " (now))
+    (println "Starting " (now))
     (.start thread)
     (add-watch collected-gcis 1
                (fn [k r o n]
@@ -167,7 +167,6 @@
     (add-watch resulting-gcis 1
                (fn [k r o n]
                  (println "returned:" (count n) (now))))
-    (start-profiling :thread thread)
     [collected-gcis, resulting-gcis, thread]))
 
 
