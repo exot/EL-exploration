@@ -147,6 +147,53 @@
                                                    [C D] [D C]
                                                    [E F] [F E]}))
 
+;;; Lisp Example
+
+(define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational, Reflective, StackOriented, Concatenative,
+                   Imperative, Lazy, Modular, Meta, Generic, Scripting, Prototyping]
+                  [Influenced]
+                  []
+                  :extends EL-gfp)
+
+(def lisp-model (interpretation LispDL
+                                [IPL Lisp ML Haskell Scheme Common-Lisp Dylan Lua
+                                 Ruby Python Perl Smalltalk Logo Tcl Forth]
+                                Assembly        #{IPL}
+                                Functional      #{Lisp ML Haskell Scheme Common-Lisp Dylan Lua
+                                                  Ruby Python Perl Logo Tcl}
+                                ObjectOriented  #{Smalltalk Tcl Perl Python Ruby Lua Dylan
+                                                  Common-Lisp}
+                                Procedural      #{Lisp Logo Tcl Forth Scheme Common-Lisp
+                                                  Lua Perl Python}
+                                Educational     #{Logo}
+                                Reflective      #{Lisp Ruby Python Perl Logo Forth}
+                                StackOriented   #{Forth}
+                                Concatenative   #{Forth}
+                                Imperative      #{ML Tcl Perl Python Ruby Lua}
+                                Lazy            #{Haskell}
+                                Modular         #{Haskell}
+                                Meta            #{Lisp Scheme Common-Lisp}
+                                Generic         #{Common-Lisp Perl}
+                                Scripting       #{Lua}
+                                Prototyping     #{Lua}
+                                Influenced      #{[IPL Lisp]
+                                                  [Lisp ML] [Lisp Haskell] [Lisp Scheme]
+                                                  [Lisp Logo] [Lisp Tcl] [Lisp Forth]
+                                                  [Lisp Smalltalk] [Lisp Common-Lisp]
+                                                  [Lisp Dylan] [Lisp Perl] [Lisp Python]
+                                                  [Lisp Ruby] [Lisp Lua]
+                                                  [ML Haskell]
+                                                  [Haskell Python]
+                                                  [Scheme Haskell] [Scheme Common-Lisp] [Scheme Dylan]
+                                                  [Scheme Lua] [Scheme Ruby]
+                                                  [Logo Smalltalk]
+                                                  [Common-Lisp Dylan]
+                                                  [Dylan Python] [Dylan Ruby]
+                                                  [Smalltalk Common-Lisp] [Smalltalk Dylan] [Smalltalk Ruby]
+                                                  [Smalltalk Perl]
+                                                  [Perl Python] [Perl Ruby]
+                                                  [Python Ruby]}))
+
 ;;;
 
 nil
