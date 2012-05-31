@@ -151,7 +151,7 @@
 
 (define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational, Reflective, StackOriented, Concatenative,
                    Imperative, Lazy, Modular, Meta, Generic, Scripting, Prototyping]
-                  [Influenced]
+                  [Influenced HasDialect]
                   []
                   :extends EL-gfp)
 
@@ -176,10 +176,10 @@
                                 Generic         #{Common-Lisp Perl}
                                 Scripting       #{Lua}
                                 Prototyping     #{Lua}
+                                HasDialect      #{[Lisp Scheme] [Lisp Common-Lisp]}
                                 Influenced      #{[IPL Lisp]
-                                                  [Lisp ML] [Lisp Haskell] [Lisp Scheme]
-                                                  [Lisp Logo] [Lisp Tcl] [Lisp Forth]
-                                                  [Lisp Smalltalk] [Lisp Common-Lisp]
+                                                  [Lisp ML] [Lisp Haskell] [Lisp Logo]
+                                                  [Lisp Tcl] [Lisp Forth] [Lisp Smalltalk]
                                                   [Lisp Dylan] [Lisp Perl] [Lisp Python]
                                                   [Lisp Ruby] [Lisp Lua]
                                                   [ML Haskell]

@@ -79,6 +79,7 @@
            (if P_k
              ;; then search for next implication
              (let [all-P_k      (make-dl-expression language (cons 'and P_k)),
+
                    next-model   (loop [model model]
                                   (let [susu (abbreviate-subsumption (make-subsumption all-P_k
                                                                                        (model-closure model all-P_k))
@@ -87,6 +88,7 @@
                                             (not (expert-refuses? susu)))
                                       model
                                       (recur (extend-model-by-counterexample model susu))))),
+
                    all-P_k-closure
                                 (model-closure next-model all-P_k),
 
