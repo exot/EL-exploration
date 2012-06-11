@@ -185,12 +185,25 @@
   [interpretation A]
   (count (interpret interpretation A)))
 
+;;;
+
+(defn gci-support
+  "Returns the support of the given GCI in the given interpretation."
+  [gci interpretation]
+  (if (empty? (interpretation-base-set interpretation))
+    1
+    (/ (count (interpret interpretation (subsumee gci)))
+       (count (interpretation-base-set interpretation)))))
+
 (defn gci-confidence
-  "Returns some kind of confidence for the gci A -> B in
-  interpretation."
-  [interpretation A B]
-  (- 1 (/ (number-of-counterexamples interpretation A B)
-          (count (interpret interpretation A)))))
+  "Returns the confidence of the giben GCI in the given interpretation."
+  [gci interpretation]
+  (let [c (count (interpret interpretation (subsumee gci)))]
+    (if (zero? c)
+      1
+      (/ (count (interpret interpretation (dl-expression (interpretation-language interpretation)
+                                                         (and (subsumee gci) (subsumer gci)))))
+         c))))
 
 (defn concept-size
   "Returns the size of an EL-gfp concept description."
