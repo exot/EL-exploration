@@ -43,6 +43,29 @@
                      (union (attributes old-context) new-attributes)
                      new-incidence))))
 
+(defn essential-concept-descriptions
+  "Returns the set of all \"essential concept descriptions\" (the set M_{\\mathcal{I}}) of
+  the given interpretation"
+  [interpretation]
+  (with-memoized-fns [EL-expression->rooted-description-graph,
+                      interpret,
+                      most-specific-concept,
+                      subsumed-by?,
+                      interpretation->tbox]
+    (let [language (interpretation-language interpretation),
+          M_I      (concat (map #(make-dl-expression language %)
+                                (concept-names language))
+                           (mapcat (fn [objs]
+                                     (let [msc (expression-term
+                                                (most-specific-concept interpretation objs))]
+                                       (map #(make-dl-expression language (list 'exists % msc))
+                                            (role-names language))))
+                                   (all-closed-sets (interpretation-base-set interpretation)
+                                                    #(interpret
+                                                      interpretation
+                                                      (most-specific-concept interpretation %)))))]
+      (doall M_I))))
+
 (defn- obviously-true?
   "Returns true iff the given subsumption is obviously true."
   [subsumption]
