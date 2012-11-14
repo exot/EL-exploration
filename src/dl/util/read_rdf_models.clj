@@ -46,8 +46,8 @@
                 line-count 0]
            (if-let [line (read-line)]
              (do
-               (when (zero? (mod line-count 10000))
-                 (println line-count (map-count map)))
+               ;; (when (zero? (mod line-count 10000))
+               ;;   (println line-count (map-count map)))
                (let [[role [A B]] (rdf-line-to-pair line)]
                  (recur (if (and role A B
                                  (interesting-role? role)
@@ -57,7 +57,7 @@
                           map)
                         (inc line-count))))
              (do
-               (println line-count)
+;;               (println line-count)
                map)))))))
 
 (defn- capitalize
@@ -256,13 +256,13 @@
              line-count 0]
         (if-let [line (read-line)]
           (do
-            (when (zero? (mod line-count 10000))
-              (println line-count))
+            ;; (when (zero? (mod line-count 10000))
+            ;;   (println line-count))
             (let [[role _] (rdf-line-to-pair line)]
               (recur (assoc map role (inc (get map role 0)))
                      (inc line-count))))
           (do
-            (println line-count)
+;;            (println line-count)
             map))))))
 
 (defn read-dbpedia-model
@@ -279,8 +279,8 @@
   ([map role triples]
      (role-to-concept map role triples (fn [x y] y)))
   ([map role triples modifier]
-     (println role)
-     (println (count (get triples role)))
+     ;; (println role)
+     ;; (println (count (get triples role)))
      (reduce (fn [map [A B]]
                (let [B (modifier role B)]
                  (assoc map B (conj (get map B) A))))
