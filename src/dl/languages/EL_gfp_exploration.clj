@@ -23,7 +23,7 @@
 
 ;;; technical helpers
 
-(defn- induced-context
+(defn induced-context
   "Returns context induced by the set of concept descriptions and the
   given model."
   ([descriptions model]
