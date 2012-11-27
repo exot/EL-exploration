@@ -142,34 +142,6 @@
                          base-set
                          interpr)))
 
-(defn explore-verbosely
-  "Computes a basis of gcis holding in model. Returns a reference
-  to the gcis collected so far, a reference to the gcis returned so
-  far and the thread where the computation is done."
-  [model & args]
-  (let [collected-gcis (ref []),
-        resulting-gcis (ref []),
-
-        explore (fn [model]
-                  (binding [expert-refuses? (fn [susu]
-                                              (dosync (alter collected-gcis
-                                                             conj susu))
-                                              false)]
-                    (apply explore-model model args))),
-        thread (Thread. #(let [result (time (explore model))]
-                           (time (doseq [gci result]
-                                   (dosync (alter resulting-gcis conj gci))))))]
-    (println "Starting " (now))
-    (.start thread)
-    (add-watch collected-gcis 1
-               (fn [k r o n]
-                 (println "collected:" (count n) (now))))
-    (add-watch resulting-gcis 1
-               (fn [k r o n]
-                 (println "returned:" (count n) (now))))
-    [collected-gcis, resulting-gcis, thread]))
-
-
 ;;; Exploration Utilities
 
 (defn number-of-counterexamples

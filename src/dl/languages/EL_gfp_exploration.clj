@@ -11,11 +11,9 @@
         dl.framework.syntax
         dl.framework.semantics
         dl.framework.reasoning
-        dl.languages.interaction
         dl.languages.description-graphs
         dl.languages.EL-gfp
-        dl.languages.EL-gfp-rewriting
-        dl.util.concept-sets))
+        dl.languages.EL-gfp-rewriting))
 
 (ns-doc
  "Implements exploration for description logics EL and EL-gfp.")
@@ -44,154 +42,142 @@
                      new-incidence))))
 
 (defn essential-concept-descriptions
-  "Returns the set of all \"essential concept descriptions\" (the set M_{\\mathcal{I}}) of
-  the given interpretation"
+  "Returns the list of all \"essential concept descriptions\" (the set M_{\\mathcal{I}}) of
+  the given interpretation."
   [interpretation]
   (with-memoized-fns [EL-expression->rooted-description-graph,
                       interpret,
                       most-specific-concept,
                       subsumed-by?,
                       interpretation->tbox]
-    (let [language (interpretation-language interpretation),
-          M_I      (concat (map #(make-dl-expression language %)
-                                (concept-names language))
-                           (mapcat (fn [objs]
-                                     (let [msc (expression-term
-                                                (most-specific-concept interpretation objs))]
-                                       (map #(make-dl-expression language (list 'exists % msc))
-                                            (role-names language))))
-                                   (all-closed-sets (interpretation-base-set interpretation)
-                                                    #(interpret
-                                                      interpretation
-                                                      (most-specific-concept interpretation %)))))]
+    (let [i    interpretation,
+          lang (interpretation-language i),
+          M_I  (concat (map #(make-dl-expression lang %)
+                            (concept-names lang))
+                       (mapcat (fn [objs]
+                                 (let [msc (expression-term (most-specific-concept i objs))]
+                                   (map #(make-dl-expression lang (list 'exists % msc))
+                                        (role-names lang))))
+                               (all-closed-sets (interpretation-base-set i)
+                                                #(interpret i (most-specific-concept i %)))))]
       (doall M_I))))
-
-(defn- obviously-true?
-  "Returns true iff the given subsumption is obviously true."
-  [subsumption]
-  (subsumed-by? (subsumee subsumption) (subsumer subsumption)))
 
 ;;; actual exploration algorithm
 
-(defn explore-model
-  "Model exploration algorithm."
-  ([initial-model]
-     (explore-model initial-model (concept-names (interpretation-language initial-model))))
-  ([initial-model initial-ordering]
+(defn model-gcis
+  "Returns base of given interpretation."
+  ;;
+  ([model]
+     (model-gcis model (concept-names (interpretation-language model))))
+  ;;
+  ([model initial-ordering]
      (with-memoized-fns [EL-expression->rooted-description-graph,
                          interpret,
-                         model-closure,
                          subsumed-by?,
                          interpretation->tbox]
-       (let [language (interpretation-language initial-model)]
+       (let [language      (interpretation-language model),
+             model-closure (memoize (fn [concept-description]
+                                      (model-closure model concept-description))),
+             bigsqcap      (memoize (fn [P]
+                                      (make-dl-expression language (cons 'and P))))]
 
          (when (and (not= (set initial-ordering) (concept-names language))
                     (not= (count initial-ordering) (count (concept-names language))))
-           (illegal-argument "Given initial-ordering for explore-model must consist "
+           (illegal-argument "Given initial-ordering for model-gcis must consist "
                              "of all concept names of the language of the given model."))
 
-         (loop [M_k   (make-concept-set (map #(dl-expression language %) ;the set of constructed concepts
-                                             initial-ordering)),
-                Pi_k  [],               ;the sequence of pseudo-intents found
-                P-map {},               ;a map mapping pseudo-intents P to [all-P, all-P-closure]
-                P_k   #{},              ;the current pseudo-intent
-                model initial-model,    ;working model
-                implications #{},
-                background-knowledge #{}]
+         (loop [;;the set of constructed concepts
+                M                     (map #(dl-expression language %) initial-ordering),
+                ;; the sequence of concept-descriptions defined by pseudo-intents found
+                pseudo-descriptions   [],
+                ;; the current pseudo-intent
+                P                     #{},
+                ;; found implications
+                implications          #{},
+                ;; accumulated background knowledge
+                background-knowledge  #{}]
 
-           (if P_k
+           (if P
              ;; then search for next implication
-             (let [all-P_k      (make-dl-expression language (cons 'and P_k)),
+             (let [all-P        (bigsqcap P),
+                   _ (println all-P),
+                   all-P-closure
+                                (model-closure all-P),
 
-                   next-model   (loop [model model]
-                                  (let [susu (abbreviate-subsumption (make-subsumption all-P_k
-                                                                                       (model-closure model all-P_k))
-                                                                     (union implications background-knowledge))]
-                                    (if (or (obviously-true? susu)
-                                            (not (expert-refuses? susu)))
-                                      model
-                                      (recur (extend-model-by-counterexample model susu))))),
-
-                   all-P_k-closure
-                                (model-closure next-model all-P_k),
-
-                   new-concepts (when (forall [[_ Q-closure] (vals P-map)]
-                                        (not (equivalent? all-P_k-closure Q-closure))),
+                   new-concepts (when (forall [Q pseudo-descriptions]
+                                        (not (equivalent? all-P-closure
+                                                          (model-closure Q)))), ; use interpret
                                   (for [r (role-names language)]
-                                    (dl-expression language (exists r all-P_k-closure)))),
-                   next-M_k     (apply add-concepts! M_k new-concepts),
+                                    (dl-expression language (exists r all-P-closure)))),
+                   next-M       (concat M new-concepts),
 
-                   P-map        (assoc P-map
-                                  P_k [all-P_k all-P_k-closure]),
-                   next-Pi_k    (conj Pi_k P_k),
+                   pseudo-descriptions
+                                (conj pseudo-descriptions all-P),
 
-                   implications (let [new-impl (make-implication P_k
-                                                                 (set-of D | D (seq M_k)
-                                                                             :when (subsumed-by? all-P_k-closure D))),
-                                      impls    (if-not new-concepts
-                                                 implications
-                                                 (set-of impl | old-impl implications
-                                                                :let [P (premise old-impl),
-                                                                      Q (conclusion old-impl),
-                                                                      P-closure (second (get P-map P)),
-                                                                      impl (make-implication
-                                                                            P
-                                                                            (into Q
-                                                                                  (set-of D | D new-concepts
-                                                                                              :when (subsumed-by? P-closure D))))]
-                                                                :when (not-empty (conclusion impl))))]
-                                  (if (not-empty (conclusion new-impl))
-                                    (conj impls new-impl)
-                                    impls)),
+                   ;; amend implications
+                   implications (if-not new-concepts
+                                  implications
+                                  (set-of (make-implication
+                                           X
+                                           (into Y (filter (fn [D]
+                                                             (subsumed-by? (bigsqcap X) D))
+                                                           new-concepts)))
+                                          | old-impl implications
+                                            :let [X (premise old-impl),
+                                                  Y (conclusion old-impl)])),
+
+                   implications (conj implications
+                                      (make-implication
+                                       P
+                                       (set-of D | D next-M,
+                                                   :when (subsumed-by? all-P-closure D))))
 
                    background-knowledge
-                                (minimal-implication-set next-M_k),
-
-                   next-P_k     (next-closed-set (seq next-M_k)
-                                                 (clop-by-implications (union implications background-knowledge))
-                                                 P_k)]
-               (recur next-M_k next-Pi_k P-map next-P_k next-model implications background-knowledge))
+                                (union background-knowledge
+                                       (set-of (make-implication #{C} #{D})
+                                               | C M, D new-concepts
+                                                 :when (subsumed-by? C D))
+                                       (set-of (make-implication #{C} #{D})
+                                               | C new-concepts, D M
+                                               :when (subsumed-by? C D))),
+                   
+                   ;; compute next pseudo-intent
+                   next-P       (next-closed-set next-M
+                                                 (clop-by-implications
+                                                  (union implications background-knowledge))
+                                                 P)]
+               (recur next-M pseudo-descriptions next-P implications background-knowledge))
 
              ;; else return set of implications
              (let [implicational-knowledge (union implications background-knowledge)]
+               (println "Size: "
+                        (count implications)
+                        (count background-knowledge)
+                        (count pseudo-descriptions)
+                        (count M))
                (doall ;ensure that this sequence is evaluated with our bindings in effect
-                (for [P Pi_k
-                      :let [[all-P all-P-closure] (get P-map P)]
+                (for [all-P pseudo-descriptions,
+                      :let [all-P-closure (model-closure all-P)]
                       :when (not (subsumed-by? all-P all-P-closure))
                       :let [susu (abbreviate-subsumption (make-subsumption all-P all-P-closure)
                                                          implicational-knowledge)]
                       :when (not-empty (arguments (subsumer susu)))]
                   susu)))))))))
 
-;;; gcis
-
-(defn model-gcis
-  "Returns a complete and sound set of gcis holding in model. See
-  explore-model for valid args."
-  [model & args]
-  (binding [expert-refuses? (constantly false)]
-    (apply explore-model model args)))
-
 (defn model-gcis-naive
   "Naive implementation of model-gcis."
   [model]
-  (let [language    (interpretation-language model),
-        M_i (concat (map #(make-dl-expression language %)
-                         (concept-names language))
-                    (mapcat (fn [objs]
-                              (let [msc (expression-term (most-specific-concept model objs))]
-                                (map #(make-dl-expression language (list 'exists % msc))
-                                     (role-names language))))
-                            (all-closed-sets (interpretation-base-set model)
-                                             #(interpret model (most-specific-concept model %))))),
-        K   (induced-context M_i model),
-        S   (minimal-implication-set (make-concept-set M_i)),
-        sb  (stem-base K S),
-        su  (set-of (make-subsumption pre clc)
-                    [impl sb
-                     :let [pre (make-dl-expression language (cons 'and (premise impl))),
-                           clc (make-dl-expression language (cons 'and (conclusion impl)))]
-                     :when (not (subsumed-by? pre clc))])]
+  (let [language (interpretation-language model),
+        M_i      (essential-concept-descriptions model),
+        K        (induced-context M_i model),
+        S        (canonical-base-from-base
+                  (set-of (make-implication #{C} #{D}) | C M_i, D M_i, :when (subsumed-by? C D)))
+        sb       (canonical-base K S),
+        su       (set-of (make-subsumption pre clc)
+                         [impl sb
+                          :let [pre (make-dl-expression language (cons 'and (premise impl))),
+                                clc (make-dl-expression language (cons 'and (conclusion impl)))]
+                          :when (not (subsumed-by? pre clc))])]
     su))
 
 ;;;
