@@ -15,7 +15,6 @@
               tests.dl.languages.description-graphs
               tests.dl.languages.EL-gfp
               tests.dl.framework.reasoning
-              tests.dl.util.concept-sets
               tests.dl.languages.EL-gfp-rewriting
               tests.dl.languages.EL-gfp-exploration)
 
