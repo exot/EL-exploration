@@ -58,8 +58,9 @@
                                  (let [msc (expression-term (most-specific-concept i objs))]
                                    (map #(make-dl-expression lang (list 'exists % msc))
                                         (role-names lang))))
-                               (all-closed-sets (interpretation-base-set i)
-                                                #(interpret i (most-specific-concept i %)))))]
+                               (remove empty?
+                                (all-closed-sets (interpretation-base-set i)
+                                                 #(interpret i (most-specific-concept i %))))))]
       (doall M_I))))
 
 ;;; actual exploration algorithm
