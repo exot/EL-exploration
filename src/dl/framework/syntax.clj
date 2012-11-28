@@ -399,7 +399,7 @@
 (defmethod print-method DL-subsumption [susu out]
   (let [^String output (with-out-str
                           (print (list (subsumee susu)
-                                       '==>
+                                       '⊑
                                        (subsumer susu))))]
     (.write ^java.io.Writer out (.trim output))))
 
