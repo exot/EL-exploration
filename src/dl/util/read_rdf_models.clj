@@ -215,7 +215,16 @@
                    (read-rdf-lines-from-file instances
                                              (constantly true)
                                              #(contains? ins %)
-                                             #(not (re-find #"owl#Thing" %))))]
+                                             #(not (re-find #"owl#Thing" %)))),
+
+        transform (fn transform [thing]
+                    (if (string? thing)
+                      (capitalize
+                       (second (re-find #"http://dbpedia.org/[^/]*/(.*)" thing)))
+                      (walk transform identity thing))),
+
+        concepts  (transform concepts),
+        relations (transform relations)]
     [(prepare-for-conexp concepts), (prepare-for-conexp relations)]))
 
 (defn- role-support
