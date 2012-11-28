@@ -109,7 +109,7 @@
                                                           (model-closure Q)))), ; use interpret
                                   (for [r (role-names language)]
                                     (dl-expression language (exists r all-P-closure)))),
-                   next-M       (concat M new-concepts),
+                   next-M       (concat new-concepts M),
 
                    pseudo-descriptions
                                 (conj pseudo-descriptions all-P),
