@@ -8,7 +8,7 @@
 
 ;;;
 
-(defproject EL-exploration "1.0.0")
+(defproject EL-exploration "1.0.0"
   :min-lein-version "1.3.0"
   :description "A prototypical implementation of Distel's EL Exploration Algorithm"
   :repositories {"math" "http://www.math.tu-dresden.de/~borch/repos/mvn/"}
