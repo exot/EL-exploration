@@ -58,9 +58,8 @@
                                  (let [msc (expression-term (most-specific-concept i objs))]
                                    (map #(make-dl-expression lang (list 'exists % msc))
                                         (role-names lang))))
-                               (remove empty?
-                                (all-closed-sets (interpretation-base-set i)
-                                                 #(interpret i (most-specific-concept i %))))))]
+                               (all-closed-sets (interpretation-base-set i)
+                                                #(interpret i (most-specific-concept i %)))))]
       (doall M_I))))
 
 ;;; actual exploration algorithm
@@ -73,12 +72,13 @@
   ;;
   ([model initial-ordering]
      (with-memoized-fns [EL-expression->rooted-description-graph,
-                         interpret,
                          subsumed-by?,
                          interpretation->tbox]
        (let [language      (interpretation-language model),
              model-closure (memoize (fn [concept-description]
                                       (model-closure model concept-description))),
+             interpret     (memoize (fn [C]
+                                      (interpret model C))),
              bigsqcap      (memoize (fn [P]
                                       (make-dl-expression language (cons 'and P))))]
 
@@ -100,14 +100,12 @@
 
            (if P
              ;; then search for next implication
-             (let [all-P        (bigsqcap P),
-                   _ (println all-P),
-                   all-P-closure
-                                (model-closure all-P),
+             (let [all-P         (bigsqcap P),
+                   all-P-closure (model-closure all-P),
 
                    new-concepts (when (forall [Q pseudo-descriptions]
                                         (not (equivalent? all-P-closure
-                                                          (model-closure Q)))), ; use interpret
+                                                          (model-closure Q))))
                                   (for [r (role-names language)]
                                     (dl-expression language (exists r all-P-closure)))),
                    next-M       (concat new-concepts M),
@@ -121,7 +119,8 @@
                                   (set-of (make-implication
                                            X
                                            (into Y (filter (fn [D]
-                                                             (subsumed-by? (bigsqcap X) D))
+                                                             (subset? (interpret (bigsqcap X))
+                                                                      (interpret D)))
                                                            new-concepts)))
                                           | old-impl implications
                                             :let [X (premise old-impl),
@@ -131,7 +130,8 @@
                                       (make-implication
                                        P
                                        (set-of D | D next-M,
-                                                   :when (subsumed-by? all-P-closure D))))
+                                                   :when (subset? (interpret (bigsqcap P))
+                                                                  (interpret D)))))
 
                    background-knowledge
                                 (union background-knowledge
@@ -140,7 +140,7 @@
                                                  :when (subsumed-by? C D))
                                        (set-of (make-implication #{C} #{D})
                                                | C new-concepts, D M
-                                               :when (subsumed-by? C D))),
+                                                 :when (subsumed-by? C D))),
                    
                    ;; compute next pseudo-intent
                    next-P       (next-closed-set next-M
@@ -159,11 +159,8 @@
                (doall ;ensure that this sequence is evaluated with our bindings in effect
                 (for [all-P pseudo-descriptions,
                       :let [all-P-closure (model-closure all-P)]
-                      :when (not (subsumed-by? all-P all-P-closure))
-                      :let [susu (abbreviate-subsumption (make-subsumption all-P all-P-closure)
-                                                         implicational-knowledge)]
-                      :when (not-empty (arguments (subsumer susu)))]
-                  susu)))))))))
+                      :when (not (subsumed-by? all-P all-P-closure))]
+                  (make-subsumption all-P all-P-closure))))))))))
 
 (defn model-gcis-naive
   "Naive implementation of model-gcis."
@@ -172,12 +169,12 @@
         M_i      (essential-concept-descriptions model),
         K        (induced-context M_i model),
         S        (canonical-base-from-base
-                  (set-of (make-implication #{C} #{D}) | C M_i, D M_i, :when (subsumed-by? C D)))
+                  (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
         sb       (canonical-base K S),
         su       (set-of (make-subsumption pre clc)
                          [impl sb
                           :let [pre (make-dl-expression language (cons 'and (premise impl))),
-                                clc (make-dl-expression language (cons 'and (conclusion impl)))]
+                                clc (model-closure model pre)]
                           :when (not (subsumed-by? pre clc))])]
     su))
 

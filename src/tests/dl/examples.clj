@@ -147,6 +147,15 @@
                                                    [C D] [D C]
                                                    [E F] [F E]}))
 
+(def family-2-model (interpretation FamilyDL
+                                    [A B C]
+                                    Female #{A}
+                                    Male   #{B C}
+                                    Mother #{A}
+                                    Father #{B}
+                                    HasChild #{[A C] [B C]}
+                                    MarriedTo #{[A B] [B A]}))
+
 ;;; Lisp Example
 
 (define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational, Reflective, StackOriented, Concatenative,
