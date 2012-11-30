@@ -50,8 +50,8 @@
   expressions-language)
 
 (defmethod equivalent? :default [C D]
-  (and (subsumed-by? C D)
-       (subsumed-by? D C)))
+  (apply #(and %1 %2)
+         (pvalues (subsumed-by? C D) (subsumed-by? D C))))
 
 (defmacro define-equivalence
   "Define equivalence algorithm for given language."
