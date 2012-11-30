@@ -46,9 +46,7 @@
   the given interpretation."
   [interpretation]
   (with-memoized-fns [EL-expression->rooted-description-graph,
-                      interpret,
                       most-specific-concept,
-                      subsumed-by?,
                       interpretation->tbox]
     (let [i    interpretation,
           lang (interpretation-language i),
@@ -165,18 +163,21 @@
 (defn model-gcis-naive
   "Naive implementation of model-gcis."
   [model]
-  (let [language (interpretation-language model),
-        M_i      (essential-concept-descriptions model),
-        K        (induced-context M_i model),
-        S        (canonical-base-from-base
-                  (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
-        sb       (canonical-base K S),
-        su       (set-of (make-subsumption pre clc)
-                         [impl sb
-                          :let [pre (make-dl-expression language (cons 'and (premise impl))),
-                                clc (model-closure model pre)]
-                          :when (not (subsumed-by? pre clc))])]
-    su))
+  (with-memoized-fns [EL-expression->rooted-description-graph,
+                      interpretation->tbox]
+
+    (let [language (interpretation-language model),
+          M_i      (essential-concept-descriptions model),
+          K        (induced-context M_i model),
+          S        (canonical-base-from-base
+                    (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
+          sb       (canonical-base K S),
+          su       (set-of (make-subsumption pre clc)
+                           [impl sb
+                            :let [pre (make-dl-expression language (cons 'and (premise impl))),
+                                  clc (model-closure model pre)]
+                            :when (not (subsumed-by? pre clc))])]
+      su)))
 
 ;;;
 
