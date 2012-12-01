@@ -43,8 +43,8 @@ actual `child`-relation (among others.)  Then you can do
 ```
 
 Note however, that this functionality is specific for the data sets from DBpedia.  See
-[examples.clj](EL-exploration/blob/master/src/tests/dl/examples.clj) for more examples on
-this.
+[read_rdf_models.clj](https://github.com/exot/EL-exploration/blob/master/src/dl/util/read_rdf_models.clj)
+for more examples on this.
 
 As soon as you have your interpretation, you can get a base of it like this
 
