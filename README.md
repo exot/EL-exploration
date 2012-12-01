@@ -8,7 +8,51 @@ Distel.  The main reference is the PhD Thesis by Felix Distel, available from
 How to Use
 ----------
 
-*to be written*
+The main step in using this implementation is in representing your data as an
+interpretation.  If the data itself is not very large, you can do it directly:
+
+```clj
+(use 'dl.framework.syntax
+     'dl.framework.semantics
+     'dl.languages.EL-gfp)
+
+(define-dl SimpleDL [Father Mother Male Female] [HasChild] []
+  :extends EL-gfp)
+
+(def some-model (interpretation SimpleDL
+                                #{John Marry Peter Jana}
+                                Mother #{Marry},
+                                Father #{John, Peter},
+                                Male   #{John, Peter},
+                                Female #{Marry, Jana},
+                                HasChild #{[John Peter], [Marry Peter], [Peter Jana]}))
+```
+
+However, your data may be much to large to do this (by hand.)  There is some limited
+functionality for extracting interpretations from XML-serialized RDF Triples.  Suppose you
+have some triples from DBpedia and you want to extract an interpretation that represents
+the `child`-relation in this data set.  Suppose that wikiprops.nt contains triples
+representing properties, and that wikiinstances.nt contains triples representing the
+actual `child`-relation (among others.)  Then you can do
+
+```clj
+(use 'dl.util.read-rdf-models)
+
+(def dbpedia-model
+  (read-dbpedia-model "wikiprops.nt" "wikiinstances.nt" '[child]))
+```
+
+Note however, that this functionality is specific for the data sets from DBpedia.  See
+[examples.clj](blob/master/src/tests/dl/examples.clj) for more examples on this.
+
+As soon as you have your interpretation, you can get a base of it like this
+
+```clj
+(use 'dl.languages.EL-gfp-exploration)
+
+(model-gcis some-model)
+(model-gcis dbpedia-model)
+```
 
 License
 -------
