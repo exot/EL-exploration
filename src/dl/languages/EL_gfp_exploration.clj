@@ -99,11 +99,14 @@
            (if P
              ;; then search for next implication
              (let [all-P         (bigsqcap P),
+
                    all-P-closure (model-closure all-P),
 
+                   ;; _ (assert (= (interpret all-P) (interpret all-P-closure))
+                   ;;           (print all-P))
+
                    new-concepts (when (forall [Q pseudo-descriptions]
-                                        (not (equivalent? all-P-closure
-                                                          (model-closure Q))))
+                                        (not (equivalent? all-P-closure (model-closure Q))))
                                   (for [r (role-names language)]
                                     (dl-expression language (exists r all-P-closure)))),
                    next-M       (concat new-concepts M),
@@ -145,6 +148,7 @@
                                                  (clop-by-implications
                                                   (union implications background-knowledge))
                                                  P)]
+               ;; redo!
                (recur next-M pseudo-descriptions next-P implications background-knowledge))
 
              ;; else return set of implications
@@ -152,7 +156,6 @@
                (println "Size: "
                         (count implications)
                         (count background-knowledge)
-                        (count pseudo-descriptions)
                         (count M))
                (doall ;ensure that this sequence is evaluated with our bindings in effect
                 (for [all-P pseudo-descriptions,

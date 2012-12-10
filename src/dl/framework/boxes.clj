@@ -176,18 +176,20 @@
   (zero? (count (self-recursive-sets (usage-graph tbox)))))
 
 (defn tidy-up-ttp
-  "In a given tbox-target-pair take for a set of syntactically
-  equivalent defined concepts one representative and replace every
-  occurence of an equivalent symbol by this representative. Use
-  clarify-ttp (or reduce-ttp) afterwards to remove all unused
+  "In a given tbox-target-pair take for a set of syntactically equally-defined concepts
+  one representative and replace every occurence of an equivalent symbol by this
+  representative. Use clarify-ttp (or reduce-ttp) afterwards to remove all unused
   definitions."
   [[tbox target]]
-  (let [reversed-map (reduce! (fn [map definition]
+  (let [;; collect for all expressions in the TBox the symbols that define it
+        reversed-map (reduce! (fn [map definition]
                                 (let [key (expression-term (definition-expression definition))]
                                   (assoc! map key (conj (get map key)
                                                         (definition-target definition)))))
                               {}
                               (tbox-definitions tbox)),
+        
+        ;; for each expression, use the first symbol that defined it as new defining symbol
         rename-map   (reduce! (fn [map definition]
                                 (assoc! map
                                         (definition-target definition)
@@ -199,14 +201,16 @@
                                             first)))
                               {}
                               (vals (tbox-definition-map tbox))),
+        
         new-tbox (make-tbox (tbox-language tbox)
                             (reduce! (fn [map definition]
                                        (assoc! map
                                                (definition-target definition)
-                                               (make-dl-definition (tbox-language tbox)
-                                                                   (definition-target definition)
-                                                                   (substitute (definition-expression definition)
-                                                                               rename-map))))
+                                               (make-dl-definition
+                                                (tbox-language tbox)
+                                                (definition-target definition)
+                                                (substitute (definition-expression definition)
+                                                            rename-map))))
                                      {}
                                      (vals (tbox-definition-map tbox))))]
     (if (not= tbox new-tbox)

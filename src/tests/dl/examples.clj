@@ -156,6 +156,25 @@
                                     HasChild #{[A C] [B C]}
                                     MarriedTo #{[A B] [B A]}))
 
+(def family-3-model (interpretation FamilyDL
+                                    [A B C]
+                                    Female #{A}
+                                    Male   #{B C}
+                                    Mother #{A}
+                                    Father #{B C}
+                                    HasChild #{[A C] [B C] [C A]}
+                                    MarriedTo #{[A B] [B A]}))
+
+(def family-4-model (interpretation FamilyDL
+                                    [A B C D E]
+                                    Female #{A}
+                                    Male   #{C E}
+                                    Mother #{A E}
+                                    Father #{B}
+                                    HasChild #{}
+                                    MarriedTo #{[A A] [B A] [A C] [C A] [D A]}))
+
+
 ;;; Lisp Example
 
 (define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational, Reflective, StackOriented, Concatenative,

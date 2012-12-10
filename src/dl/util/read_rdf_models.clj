@@ -211,6 +211,7 @@
                                             (constantly true)
                                             (constantly true)),
         ins       (set (flatten (vals relations))),
+
         concepts  (role-map->concept-map
                    (read-rdf-lines-from-file instances
                                              (constantly true)
