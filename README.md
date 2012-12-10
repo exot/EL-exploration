@@ -55,13 +55,6 @@ As soon as you have your interpretation, you can get a base of it like this
 (model-gcis dbpedia-model)
 ```
 
-Issues
-------
-
-There seems to be a bug in the implementation of `model-gcis`: for the interpretation
-extracted from DBpedia when only considering the child-relation, `model-gcis` returns
-*fewer* GCIs then `model-gcis-naive` does, which should not be the case.
-
 License
 -------
 
