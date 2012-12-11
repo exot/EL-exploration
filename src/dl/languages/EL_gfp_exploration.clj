@@ -47,16 +47,17 @@
   [interpretation]
   (with-memoized-fns [EL-expression->rooted-description-graph,
                       most-specific-concept,
-                      interpretation->tbox]
+                      interpretation->tbox,
+                      interpretation->description-graph]
     (let [i    interpretation,
           lang (interpretation-language i),
           M_I  (concat (map #(make-dl-expression lang %)
                             (concept-names lang))
                        (mapcat (fn [objs]
                                  (let [msc (expression-term (most-specific-concept i objs))]
-                                   (map #(make-dl-expression lang (list 'exists % msc))
-                                        (role-names lang))))
-                               (all-closed-sets (interpretation-base-set i)
+                                   (for [r (role-names lang)]
+                                     (make-dl-expression lang (list 'exists r msc)))))
+                               (all-closed-sets (seq (interpretation-base-set i))
                                                 #(interpret i (most-specific-concept i %)))))]
       (doall M_I))))
 
@@ -71,7 +72,8 @@
   ([model initial-ordering]
      (with-memoized-fns [EL-expression->rooted-description-graph,
                          subsumed-by?,
-                         interpretation->tbox]
+                         interpretation->tbox,
+                         interpretation->description-graph]
        (let [language      (interpretation-language model),
              model-closure (memoize (fn [concept-description]
                                       (model-closure model concept-description))),
@@ -101,9 +103,6 @@
              (let [all-P         (bigsqcap P),
 
                    all-P-closure (model-closure all-P),
-
-                   ;; _ (assert (= (interpret all-P) (interpret all-P-closure))
-                   ;;           (print all-P))
 
                    new-concepts (when (forall [Q pseudo-descriptions]
                                         (not (equivalent? all-P-closure (model-closure Q))))
