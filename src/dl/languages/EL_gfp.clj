@@ -27,7 +27,7 @@
   [interpretation [tbox target]]
   (let [tbox-graph  (tbox->description-graph tbox),
         inter-graph (interpretation->description-graph interpretation)]
-    ((schematic-simulator-sets tbox-graph inter-graph) target)))
+    ((efficient-simulator-sets tbox-graph inter-graph) target)))
 
 (define-base-semantics EL-gfp
   [interpretation dl-expression]

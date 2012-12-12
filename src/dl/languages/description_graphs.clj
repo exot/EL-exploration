@@ -400,7 +400,7 @@
   (reduce! (fn [map, ^java.util.Map$Entry entry]
              (assoc! map (.getKey entry) (.getValue entry)))
            {}
-           (.entrySet map)))
+           (seq map)))
 
 (defmacro- while-let
   "Runs body with binding in effect as long as x is non-nil.
@@ -447,26 +447,23 @@
 ;; efficient simulator sets (by meng)
 
 (defn- single-edge->double-edge-graph
-  "Given a single-edged graph G (i.e. a graph with a neighbours
+  "Part of the implementation of efficient-simulator-sets.
+
+  Given a single-edged graph G (i.e. a graph with a neighbours
   function on it) returns a structure with a :pre and a :post function
-  on it. This function is part of the implementation for
-  efficient-simulator-sets."
+  on it."
   [G]
-  (loop [pre-map    (transient {}),
-         vertex-set (vertices G)]
-    (if (not-empty vertex-set)
-      (let [v (first vertex-set)]
-        (recur (reduce #(assoc! %1 %2 (conj (get %1 %2) v))
-                       pre-map
-                       ((neighbours G) v))
-               (rest vertex-set)))
-      {:base-set (vertices G),
-       :labels   (vertex-labels G),
-       :post     (memo-fn _ [v r]
-                   (set-of w [[s w] ((neighbours G) v)
-                              :when (= s r)])),
-       :pre      (memo-fn _ [v r]
-                   (set (get pre-map [r v] nil)))})))
+  (let [pre-map (apply merge-with union
+                       (map (fn [v]
+                              (zipmap ((neighbours G) v) (repeat #{v})))
+                            (vertices G)))]
+    {:base-set (vertices G),
+     :labels   (vertex-labels G),
+     :post     (memo-fn _ [v r]
+                 (set-of w [[s w] ((neighbours G) v)
+                            :when (= s r)])),
+     :pre      (memo-fn _ [v r]
+                 (set (get pre-map [r v] #{})))}))
 
 (defn efficient-initialize
   "Returns tripel [sim, remove, pre*] as needed by
@@ -485,22 +482,25 @@
         pre-2      (:pre G-2),
 
         R (role-names language)]
+
     (doseq [v base-set-1]
       (.put sim v
             (set-of u [u base-set-2,
                        :when (and (subset? (label-1 v) (label-2 u))
-                                  (forall [r R] (=> (empty? (post-2 u r))
-                                                    (empty? (post-1 v r)))))]))
+                                  (forall [r R]
+                                    (=> (empty? (post-2 u r))
+                                        (empty? (post-1 v r)))))]))
       (doseq [r R]
         (.put remove [v r]
               (set-of w [w base-set-2,
-                         :let [post-w (post-2 w r)]
-                         :when (not-empty post-w)
-                         :let [sim-v (.get sim v)]
-                         :when (forall [x post-w] (not (contains? sim-v x)))]))))
+                         :when (and (not-empty (post-2 w r))
+                                    (empty? (intersection (post-2 w r)
+                                                          (.get sim v))))]))))
+
     (doseq [w base-set-2]
       (.put pre* w
             (set-of [u r] [r R, u (pre-2 w r)])))
+
     [sim remove pre*]))
 
 (defn efficient-simulator-sets
@@ -523,25 +523,30 @@
         base-set-1 (:base-set G-1),
         post-2     (:post G-2),
         pre-1      (:pre G-1)]
+
     (doseq [v base-set-1,
             r R,
             :when (not-empty (.get remove [v r]))]
       (.add non-empty-removes [v r]))
+
     (while-let [[v r] (first non-empty-removes)]
-      (doseq [w (.get remove [v r]),
-              u (pre-1 v r)]
-        (when (contains? (.get sim u) w)
-          (.put sim u
-                (disj (.get sim u) w))
-          (doseq [[w* r*] (.get pre* w),
-                  :let [sim-u (.get sim u)]]
-            (when (forall [x (post-2 w* r*)]
-                    (not (contains? sim-u x)))
-              (.put remove [u r*]
-                    (conj (.get remove [u r*]) w*))
-              (.add non-empty-removes [u r*])))))
-      (.put remove [v r] #{})
-      (.remove non-empty-removes [v r]))
+      (let [remove-v-r (.get remove [v r])]
+        (.put remove [v r] #{})
+        (doseq [u (pre-1 v r),
+                w remove-v-r]
+          (when (contains? (.get sim u) w)
+            (.put sim u
+                  (disj (.get sim u) w))
+            (doseq [[w* r*] (.get pre* w),
+                    :let [sim-u (.get sim u)]]
+              (when (empty? (intersection (post-2 w* r*) sim-u))
+                (.put remove [u r*]
+                      (conj (or (.get remove [u r*]) #{})
+                            w*))
+                (.add non-empty-removes [u r*])))))
+        (when (empty? (.get remove [v r]))
+          (.remove non-empty-removes [v r]))))
+
     (HashMap->hash-map sim)))
 
 
@@ -551,7 +556,7 @@
   "Returns true iff there exists a simulation from G-1 to G-2, where
   vertex v in G-1 simulates vertex w in G-2."
   [G-1 G-2 v w]
-  (let [sim-sets (schematic-simulator-sets G-1 G-2)]
+  (let [sim-sets (efficient-simulator-sets G-1 G-2)]
     (contains? (get sim-sets v) w)))
 
 ;;; unraveling
