@@ -32,8 +32,10 @@
 
 (defmethod print-method TBox [tbox out]
   (let [^String output (with-out-str
-                          (print (list 'TBox
-                                       (vals (tbox-definition-map tbox)))))]
+                         (print (list* 'tbox
+                                       (mapcat #(list (definition-target %)
+                                                      (definition-expression %))
+                                               (vals (tbox-definition-map tbox))))))]
     (.write ^java.io.Writer out (.trim output))))
 
 (defn make-tbox
