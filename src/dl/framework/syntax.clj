@@ -369,7 +369,7 @@
   ([language target definition-sexp]
      (DL-definition. target (make-dl-expression language definition-sexp))))
 
-;;; Subsumptions
+;;; General Concept Inclusions
 
 (defrecord DL-subsumption [subsumee subsumer])
 
@@ -396,12 +396,7 @@
     (illegal-argument "Arguments to make-subsumption must be DL-expressions."))
   (DL-subsumption. C D))
 
-(defmethod print-method DL-subsumption [susu out]
-  (let [^String output (with-out-str
-                          (print (list (subsumee susu)
-                                       '⊑
-                                       (subsumer susu))))]
-    (.write ^java.io.Writer out (.trim output))))
+(defalias make-gci make-subsumption)
 
 (defmacro subsumption
   "Defines a subsumption."
@@ -410,6 +405,17 @@
                      (dl-expression ~DL ~sexp-for-subsumer)))
 
 (add-dl-syntax! 'subsumption)
+
+(defalias gci subsumption)
+
+(add-dl-syntax! 'gci)
+
+(defmethod print-method DL-subsumption [susu out]
+  (let [^String output (with-out-str
+                         (print (list 'gci
+                                      (subsumee susu)
+                                      (subsumer susu))))]
+    (.write ^java.io.Writer out (.trim output))))
 
 ;;;
 
