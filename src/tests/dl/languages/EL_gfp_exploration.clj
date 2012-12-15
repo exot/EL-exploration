@@ -11,109 +11,63 @@
         dl.framework.syntax
         dl.framework.boxes
         dl.framework.semantics
+        dl.framework.reasoning
         dl.languages.EL-gfp-exploration
         tests.dl.examples)
   (:use clojure.test))
 
 ;;;
 
-(defn- term=
-  "Returns true iff the term a and b are syntactically equal upto
-  trivial rewriting."
-  [a b]
-  (cond
-   (and (not (seq? a)) (not (seq? b)))
-   (= a b),
-
-   (or (not (seq? a)) (not (seq? b)))
-   false,
-
-   (= 'and (first a) (first b))
-   (and (forall [x (rest a)]
-          (exists [y (rest b)]
-            (term= x y)))
-        (forall [y (rest b)]
-          (exists [x (rest a)]
-            (term= x y)))),
-
-   (= 'exists (first a) (first b))
-   (and (= (second a) (second b))
-        (term= (nth a 2) (nth b 2))),
-
-   :otherwise
-   false))
-
-(defn- subsumption=
-  "Returns true iff the subsumptions a and b are term= in both there
-  subsumee and subsumer."
-  [a b]
-  (and (term= (expression-term (subsumee a))
-              (expression-term (subsumee b)))
-       (term= (expression-term (subsumer a))
-              (expression-term (subsumer b)))))
-
-(defn- find-all-unequal
-  "Finds all elements in seq-1, that are not subsumption= to the
-  corresponding element in seq-2."
-  [seq-1 seq-2]
-  (when-not (and (empty? seq-1)
-                 (empty? seq-2))
-    (let [a (first seq-1),
-          b (first seq-2)]
-      (if (not (subsumption= a b))
-        (cons [a b]
-              (find-all-unequal (rest seq-1) (rest seq-2)))
-        (find-all-unequal (rest seq-1) (rest seq-2))))))
+(defn equivalent-gcis? [gci-1 gci-2]
+  (and (equivalent? (subsumee gci-1) (subsumee gci-2))
+       (equivalent? (subsumer gci-1) (subsumer gci-2))))
 
 (deftest- model-gcis-returns-correct-result
-  (are [model initial-ordering result] (let [unequals (find-all-unequal (model-gcis model 'initial-ordering)
-                                                                        result)]
-                                         (if-not (empty? unequals)
-                                           (do
-                                             (doseq [[a b] unequals]
-                                               (println "Got:" a)
-                                               (println "Exp:" b))
-                                             false)
-                                           true))
-       paper-model [Male Female Father Mother]
-       (with-dl SimpleDL
-         (list (subsumption (and Female Male)
-                            (and [(tbox All (and Father Mother (exists HasChild All))),
-                                  All]))
-               (subsumption (and Father)
-                            (and (exists HasChild (and)) Male))
-               (subsumption (and Mother)
-                            (and Female (exists HasChild (and))))
-               (subsumption (and (exists HasChild (and)) Male)
-                            (and Father))
-               (subsumption (and Female (exists HasChild (and)))
-                            (and Mother))
-               (subsumption (and (exists HasChild (and Female)) (exists HasChild (and Male)))
-                            (and [(tbox All (and Father Mother (exists HasChild All))),
-                                  All]))
-               (subsumption (and (exists HasChild (and (exists HasChild (and)))))
-                            (and [(tbox All (and Father Mother (exists HasChild All))),
-                                  All])))),
-
-       small-model [Female Mother Male Father]
-       (with-dl SimpleDL
-         (list (subsumption (and Mother)
-                            (and Female (exists HasChild (and Female))))
-               (subsumption (and Male)
-                            (and Father))
-               (subsumption (and Father)
-                            (and Male))
-               (subsumption (and (exists HasChild (and)))
-                            (and (exists HasChild (and Female))))
-               (subsumption (and (exists HasChild (and Female)) Female)
-                            (and Mother))
-               (subsumption (and Father Mother)
-                            (and [(tbox All (and Father Mother (exists HasChild All))),
-                                  All]))
-               (subsumption (and (exists HasChild (and (exists HasChild (and Female)))))
-                            (and [(tbox All (and Father Mother (exists HasChild All))),
-                                  All]))))
-
+  (are [model result]
+       (let [cnts (filter #(not (exists [gci result] (equivalent-gcis? % gci)))
+                          (model-gcis model))]
+         (when-not (empty? cnts)
+           (println cnts))
+         (empty? cnts))
+       ;;
+       paper-model (with-dl SimpleDL
+                     (list (subsumption (and Female Male)
+                                        (and [(tbox All (and Father Mother (exists HasChild All))),
+                                              All]))
+                           (subsumption (and Father)
+                                        (and (exists HasChild (and)) Male))
+                           (subsumption (and Mother)
+                                        (and Female (exists HasChild (and))))
+                           (subsumption (and (exists HasChild (and)) Male)
+                                        (and Father))
+                           (subsumption (and Female (exists HasChild (and)))
+                                        (and Mother))
+                           (subsumption (and (exists HasChild (and Female))
+                                             (exists HasChild (and Male)))
+                                        (and [(tbox All (and Father Mother (exists HasChild All))),
+                                              All]))
+                           (subsumption (and (exists HasChild (and (exists HasChild (and)))))
+                                        (and [(tbox All (and Father Mother (exists HasChild All))),
+                                              All])))),
+       ;;
+       small-model (with-dl SimpleDL
+                     (list (subsumption (and Mother)
+                                        (and Female (exists HasChild (and Female))))
+                           (subsumption (and Male)
+                                        (and Father))
+                           (subsumption (and Father)
+                                        (and Male))
+                           (subsumption (and (exists HasChild (and)))
+                                        (and (exists HasChild (and Female))))
+                           (subsumption (and (exists HasChild (and Female)) Female)
+                                        (and Mother))
+                           (subsumption (and Father Mother)
+                                        (and [(tbox All (and Father Mother (exists HasChild All))),
+                                              All]))
+                           (subsumption (and (exists HasChild (and (exists HasChild (and Female)))))
+                                        (and [(tbox All (and Father Mother (exists HasChild All))),
+                                              All]))))
+       ;;
        ))
 
 (deftest- model-gcis-returns-correct-count

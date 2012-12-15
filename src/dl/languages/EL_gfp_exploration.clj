@@ -152,15 +152,16 @@
 
              ;; else return set of implications
              (let [implicational-knowledge (union implications background-knowledge)]
-               (println "Size: "
-                        (count implications)
-                        (count background-knowledge)
-                        (count M))
+               ;; (println "Size: "
+               ;;          (count implications)
+               ;;          (count background-knowledge)
+               ;;          (count M))
                (doall ;ensure that this sequence is evaluated with our bindings in effect
                 (for [all-P pseudo-descriptions,
                       :let [all-P-closure (model-closure all-P)]
                       :when (not (subsumed-by? all-P all-P-closure))]
-                  (make-subsumption all-P all-P-closure))))))))))
+                  (abbreviate-subsumption (make-subsumption all-P all-P-closure)
+                                          implicational-knowledge))))))))))
 
 (defn model-gcis-naive
   "Naive implementation of model-gcis."
