@@ -15,7 +15,9 @@
   :dependencies [[conexp-clj/conexp-clj "0.0.7-alpha-SNAPSHOT"]]
   :keep-non-project-classes true
   :jvm-opts ["-server", "-Xmx1g"]
-  :warn-on-reflection true)
+  :global-vars {*warn-on-reflection* true}
+  ;:test-paths ["src/tests/"]
+  )
 
 ;;;
 
