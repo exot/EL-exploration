@@ -15,8 +15,9 @@
 
 ;;;
 
-(defvar ^{:dynamic true} *print-with-dl-type* false
-  "If true, prints DL data structures with type tag.")
+(def ^{:dynamic true} *print-with-dl-type*
+  "If true, prints DL data structures with type tag."
+  false)
 
 ;;;
 
@@ -214,9 +215,9 @@
 
 (add-dl-syntax! 'dl-expression)
 
-(defnk make-dl
+(defn make-dl
   "Constructs a description logic from the given arguments."
-  [name concepts roles constr :extends nil]
+  [name concepts roles constr & {:keys [extends]}]
   (when-let [invalid (first (filter #(not (Character/isUpperCase ^Character (first (str %))))
                                     (concat concepts roles)))]
     (illegal-argument "Invalid Concept or Role name \"" invalid "\". "

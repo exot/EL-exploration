@@ -16,8 +16,8 @@
 
 ;;;
 
-(defvar- b-tbox (tbox FamilyDL, B [parent Self]))
-(defvar- a-tbox (tbox FamilyDL, A [b-tbox B]))
+(def ^:private b-tbox (tbox FamilyDL, B [parent Self]))
+(def ^:private a-tbox (tbox FamilyDL, A [b-tbox B]))
 
 (deftest test-interpret
   (are [expected testing-model expr] (= 'expected

@@ -225,13 +225,13 @@
   (subset? (interpret interpretation (subsumee subsumption))
            (interpret interpretation (subsumer subsumption))))
 
-(defnk hash-map->interpretation
+(defn hash-map->interpretation
   "Given concepts as a hash-map from symbols to sets and roles as a
   hash-map from symbols to sets of pairs returns a model containing
   the hash-maps as interpretation. If parameter :base-lang is given
   the description logic used in this model will be an extension of the
   parameter value."
-  [concepts roles :base-lang nil]
+  [concepts roles & {:keys [base-lang]}]
   (let [concept-names (keys concepts),
         role-names    (keys roles),
         language      (make-dl (gensym)
