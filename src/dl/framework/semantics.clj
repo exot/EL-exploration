@@ -36,8 +36,12 @@
   "Returns an interpretation for a given DL language on the given base set."
   [language base-set interpretation-function]
   (assert (set? base-set))
-  (assert (empty? (intersection base-set (concept-names language))))
-  (assert (empty? (intersection base-set (role-names language))))
+  (assert (empty? (intersection base-set (concept-names language)))
+          (str "There are elements which are also concept names: "
+               (intersection base-set (concept-names language))))
+  (assert (empty? (intersection base-set (role-names language)))
+          (str "There are elements which are also role names:"
+               (intersection base-set (role-names language))))
   (Interpretation. language base-set interpretation-function))
 
 (defmethod print-method Interpretation [interpretation out]
