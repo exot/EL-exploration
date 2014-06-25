@@ -24,18 +24,13 @@
 
 ;;;
 
-(defn- rdf-line-to-pair
+(defn rdf-line-to-pair
   "Converts RDF line to a pair [role [First Second]]."
   [line]
   (let [[A to B-1 B-2] (rest (re-find #"<(.*)> <(.*)> (?:<(.*)>|\"(.*)\")\s*\." line))]
     [to [A (or B-1 B-2)]]))
 
-(defn- map-count
-  "Counts overall entries in a map."
-  [hash-map]
-  (reduce + (map #(count (get hash-map %)) (keys hash-map))))
-
-(defn- read-rdf-lines-from-file
+(defn read-rdf-lines-from-file
   "From the given file reads in RDF triples and returns a map mapping relation-names to relations."
   ([file]
      (read-rdf-lines-from-file file (constantly true) (constantly true) (constantly true)))
@@ -46,8 +41,6 @@
                 line-count 0]
            (if-let [line (read-line)]
              (do
-               ;; (when (zero? (mod line-count 10000))
-               ;;   (println line-count (map-count map)))
                (let [[role [A B]] (rdf-line-to-pair line)]
                  (recur (if (and role A B
                                  (interesting-role? role)
@@ -56,9 +49,7 @@
                           (update-in map [role] conj [A B])
                           map)
                         (inc line-count))))
-             (do
-;;               (println line-count)
-               map)))))))
+             map))))))
 
 (defn- capitalize
   "Capitalizes word."
