@@ -27,7 +27,7 @@
 (defn- rdf-line-to-pair
   "Converts RDF line to a pair [role [First Second]]."
   [line]
-  (let [[A to B-1 B-2] (rest (re-find #"<(.*)> <(.*)> (?:<(.*)>|\"(.*)\")" line))]
+  (let [[A to B-1 B-2] (rest (re-find #"<(.*)> <(.*)> (?:<(.*)>|\"(.*)\")\s*\." line))]
     [to [A (or B-1 B-2)]]))
 
 (defn- map-count
