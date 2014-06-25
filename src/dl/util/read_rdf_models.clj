@@ -72,7 +72,7 @@
       :else thing))
    coll))
 
-(defn- prepare-for-conexp
+(defn prepare-for-conexp
   "Returns the given hash-map with modifications to be a valid for DL interpretations."
   [hash-map]
   (reduce! (fn [map [k v]]
@@ -80,7 +80,7 @@
            {}
            (symbolify hash-map)))
 
-(defn- role-map->concept-map [role-map]
+(defn role-map->concept-map [role-map]
   (assert (= 1 (count role-map)))
   (loop [concept-map {},
          is-as (get role-map (first (keys role-map)))]
