@@ -17,6 +17,8 @@
   :jvm-opts ["-server", "-Xmx1g"]
   :global-vars {*warn-on-reflection* true}
   ;:test-paths ["src/tests/"]
+  :license "epl-v10"
+  :url ""
   )
 
 ;;;
