@@ -35,21 +35,17 @@
   ([file]
      (read-rdf-lines-from-file file (constantly true) (constantly true) (constantly true)))
   ([file interesting-role? interesting-A? interesting-B?]
-     (with-in-reader file
-       (binding [*in* (clojure.lang.LineNumberingPushbackReader. *in*)]
-         (loop [map        {},
-                line-count 0]
-           (if-let [line (read-line)]
-             (do
-               (let [[role [A B]] (rdf-line-to-pair line)]
-                 (recur (if (and role A B
-                                 (interesting-role? role)
-                                 (interesting-A? A)
-                                 (interesting-B? B))
-                          (update-in map [role] conj [A B])
-                          map)
-                        (inc line-count))))
-             map))))))
+     (with-open [file-in (clojure.java.io/reader file)]
+       (reduce (fn [map line]
+                 (let [[role [A B]] (rdf-line-to-pair line)]
+                   (if (and role A B
+                            (interesting-role? role)
+                            (interesting-A? A)
+                            (interesting-B? B))
+                     (update-in map [role] conj [A B])
+                     map)))
+               {}
+               (line-seq file-in)))))
 
 (defn- capitalize
   "Capitalizes word."
