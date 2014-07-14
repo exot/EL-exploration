@@ -7,11 +7,10 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.framework.semantics
+  "Defines basic notions for semantics of description logics."
   (:use conexp.main
         dl.framework.syntax
         dl.framework.boxes))
-
-(ns-doc "Defines basic notions for semantics of description logics.")
 
 ;;; interpretation definition
 

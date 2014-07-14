@@ -7,6 +7,8 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns tests.dl.examples
+  "Defines example data for testing and show how to use this program.
+  Don't change anything here since the tests rely on this."
   (:use conexp.main
         dl.framework.syntax
         dl.framework.boxes
@@ -16,10 +18,6 @@
         dl.languages.EL-gfp-exploration
         dl.languages.interaction)
   (:use clojure.test))
-
-(ns-doc
- "Defines example data for testing and show how to use this program.
- Don't change anything here since the tests rely on this.")
 
 ;;; Initial Example
 

@@ -7,6 +7,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.languages.EL-gfp-exploration
+  "Implements exploration for description logics EL and EL-gfp."
   (:use conexp.main
         dl.framework.syntax
         dl.framework.semantics
@@ -14,10 +15,6 @@
         dl.languages.description-graphs
         dl.languages.EL-gfp
         dl.languages.EL-gfp-rewriting))
-
-(ns-doc
- "Implements exploration for description logics EL and EL-gfp.")
-
 
 ;;; technical helpers
 

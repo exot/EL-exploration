@@ -7,11 +7,9 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.framework.syntax
+  "Provides basic syntax definitions for DL expressions and the like."
   (:use conexp.main)
   (:use [clojure.walk :only (walk)]))
-
-(ns-doc
- "Provides basic syntax definitions for DL expressions and the like.")
 
 ;;;
 

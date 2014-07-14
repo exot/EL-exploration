@@ -7,6 +7,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.languages.description-graphs
+  "Implements description graphs and common operations on them."
   (:use conexp.main
         dl.framework.syntax
         dl.framework.boxes
@@ -14,9 +15,6 @@
         dl.util.graphs)
   (:use clojure.pprint)
   (:import [java.util HashMap HashSet]))
-
-(ns-doc
- "Implements description graphs and common operations on them.")
 
 ;;;
 

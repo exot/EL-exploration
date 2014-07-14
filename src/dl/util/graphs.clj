@@ -7,12 +7,9 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.util.graphs
+  "A custom implementation of graph algorithms on top of conexp.util.graph."
   (:use conexp.base)
   (:require [conexp.util.graph :as graph]))
-
-(ns-doc
- "A custom implementation of graph algorithms on top of
- conexp.util.graph.")
 
 ;;;
 

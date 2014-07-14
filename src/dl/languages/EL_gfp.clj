@@ -7,6 +7,7 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns dl.languages.EL-gfp
+  "Definitions for the description logic EL-gfp."
   (:use conexp.main
         dl.framework.syntax
         dl.framework.semantics
@@ -14,8 +15,6 @@
         dl.framework.reasoning
         dl.languages.description-graphs
         dl.languages.EL-gfp-rewriting))
-
-(ns-doc "Definitions for the description logic EL-gfp.")
 
 ;;; EL-gfp
 

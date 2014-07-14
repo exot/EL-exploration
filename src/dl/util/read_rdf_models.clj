@@ -9,6 +9,7 @@
 ;; A program to convert data from the dbpedia project to DL models
 
 (ns dl.util.read-rdf-models
+  "Utility functions to read DL models from DBpedia data files."
   (:use [conexp.io.util :only (with-in-reader)]
         [clojure.walk :only (walk)])
   (:use conexp.main
@@ -18,9 +19,6 @@
         dl.languages.EL-gfp
         dl.languages.EL-gfp-exploration
         dl.languages.interaction))
-
-(ns-doc
- "Utility functions to read DL models from DBpedia data files.")
 
 ;;;
 
