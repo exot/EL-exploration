@@ -14,7 +14,10 @@
 
 ;;; interpretation definition
 
-(defrecord Interpretation [language base-set function])
+(defrecord Interpretation [language base-set function]
+  Object
+  (toString [this]
+    (str (list 'Interpretation language base-set function))))
 
 (defn interpretation-base-set
   "Returns base set of a given interpretation."
@@ -44,11 +47,7 @@
   (Interpretation. language base-set interpretation-function))
 
 (defmethod print-method Interpretation [interpretation out]
-  (let [^String output (with-out-str (print (list 'Interpretation
-                                                  (interpretation-language interpretation)
-                                                  (interpretation-base-set interpretation)
-                                                  (interpretation-function interpretation))))]
-    (.write ^java.io.Writer out (.trim output))))
+  (.write ^java.io.Writer out (str interpretation)))
 
 ;;; Interpretations
 

@@ -13,7 +13,13 @@
 
 ;;; TBox definitions
 
-(defrecord TBox [language definition-map])
+(defrecord TBox [language definition-map]
+  Object
+  (toString [this]
+    (str (list* 'tbox
+                (mapcat #(list (definition-target %)
+                               (definition-expression %))
+                        (vals definition-map))))))
 
 (defn tbox?
   "Returns true iff thing is a TBox."
@@ -31,12 +37,7 @@
   (.definition-map tbox))
 
 (defmethod print-method TBox [tbox out]
-  (let [^String output (with-out-str
-                         (print (list* 'tbox
-                                       (mapcat #(list (definition-target %)
-                                                      (definition-expression %))
-                                               (vals (tbox-definition-map tbox))))))]
-    (.write ^java.io.Writer out (.trim output))))
+  (.write ^java.io.Writer out (str tbox)))
 
 (defn make-tbox
   "Creates and returns a tbox for language from the given

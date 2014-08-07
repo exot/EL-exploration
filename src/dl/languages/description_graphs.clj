@@ -18,7 +18,13 @@
 
 ;;;
 
-(defrecord Description-Graph [language vertices neighbours vertex-labels])
+(defrecord Description-Graph [language vertices neighbours vertex-labels]
+  Object
+  (toString [this]
+    (str (list 'Description-Graph
+               vertices
+               neighbours
+               vertex-labels))))
 
 (defn vertices
   "Returns vertices of given description graph."
@@ -47,12 +53,7 @@
   (Description-Graph. language vertices neighbours vertex-labels))
 
 (defmethod print-method Description-Graph [dg out]
-  (let [^String output (with-out-str
-                         (pprint (list 'Description-Graph
-                                       (vertices dg)
-                                       (neighbours dg)
-                                       (vertex-labels dg))))]
-    (.write ^java.io.Writer out (.trim output))))
+  (.write ^java.io.Writer out (str dg)))
 
 ;;; Normalizing
 

@@ -19,12 +19,15 @@
 
 ;;;
 
-(defrecord DL [name concept-names role-names constructors])
+(defrecord DL [language-name concept-names role-names constructors]
+  Object
+  (toString [this]
+    (str 'DL " " (name language-name))))
 
 (defn language-name
   "Returns the name of the given language."
   [^DL language]
-  (.name language))
+  (.language-name language))
 
 (defn concept-names
   "Returns the concept names of the given language."
@@ -47,9 +50,6 @@
   [^DL language]
   (.constructors language))
 
-(defmethod print-method DL [dl out]
-  (.write ^java.io.Writer out (print-str (list 'DL (name (language-name dl))))))
-
 (defn make-language
   "Creates a DL from concept-names, role-names and constructors."
   [name concept-names role-names constructors]
@@ -58,10 +58,13 @@
        (set role-names)
        (set constructors)))
 
+(defmethod print-method DL [dl out]
+  (.write ^java.io.Writer out (str dl)))
+
 (defn restrict-language
   "Restricts the given DL to the given concept- and role-names."
   [^DL dl concept-names role-names]
-  (DL. (.name dl)
+  (DL. (language-name dl)
        (set concept-names)
        (set role-names)
        (constructors dl)))
@@ -77,7 +80,11 @@
       cached-value
       (let [result (hash-combine-hash DL-expression language sexp)]
         (reset! hash-cache result)
-        result))))
+        result)))
+  (toString [this]
+    (if *print-with-dl-type*
+      (str 'DL-expr " " sexp)
+      (str sexp))))
 
 (defn make-dl-expression-nc
   "Creates a DL expression without any checks on already present DL
@@ -96,11 +103,7 @@
   (.language dl-expression))
 
 (defmethod print-method DL-expression [dl-exp out]
-  (let [^String output (with-out-str
-                          (if *print-with-dl-type*
-                            (print (list 'DL-expr (expression-term dl-exp)))
-                            (print (expression-term dl-exp))))]
-    (.write ^java.io.Writer out (.trim output))))
+  (.write ^java.io.Writer out (str dl-exp)))
 
 ;;;
 
@@ -340,7 +343,10 @@
 
 ;;; Definitions
 
-(defrecord DL-definition [target dl-expression])
+(defrecord DL-definition [target dl-expression]
+  Object
+  (toString [this]
+    (str target " := " dl-expression)))
 
 (defn definition-target
   "Returns target of this definition."
@@ -353,11 +359,7 @@
   (.dl-expression definition))
 
 (defmethod print-method DL-definition [definition out]
-  (let [^String s (with-out-str
-                    (print (definition-target definition))
-                    (print " := ")
-                    (print (definition-expression definition)))]
-    (.write ^java.io.Writer out s)))
+  (.write ^java.io.Writer out (str definition)))
 
 (defn make-dl-definition
   "Creates and returns a DL definition."
@@ -370,7 +372,10 @@
 
 ;;; General Concept Inclusions
 
-(defrecord DL-subsumption [subsumee subsumer])
+(defrecord DL-subsumption [subsumee subsumer]
+  Object
+  (toString [this]
+    (str (list 'gci subsumee subsumer))))
 
 (defn subsumee
   "Returns the subsumee of the given subsumption."
@@ -410,11 +415,7 @@
 (add-dl-syntax! 'gci)
 
 (defmethod print-method DL-subsumption [susu out]
-  (let [^String output (with-out-str
-                         (print (list 'gci
-                                      (subsumee susu)
-                                      (subsumer susu))))]
-    (.write ^java.io.Writer out (.trim output))))
+  (.write ^java.io.Writer out (str susu)))
 
 ;;;
 
