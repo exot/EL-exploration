@@ -58,9 +58,6 @@
        (set role-names)
        (set constructors)))
 
-(defmethod print-method DL [dl out]
-  (.write ^java.io.Writer out (str dl)))
-
 (defn restrict-language
   "Restricts the given DL to the given concept- and role-names."
   [^DL dl concept-names role-names]
@@ -101,9 +98,6 @@
   "Returns the language of this expression."
   [^DL-expression dl-expression]
   (.language dl-expression))
-
-(defmethod print-method DL-expression [dl-exp out]
-  (.write ^java.io.Writer out (str dl-exp)))
 
 ;;;
 
@@ -358,9 +352,6 @@
   [^DL-definition definition]
   (.dl-expression definition))
 
-(defmethod print-method DL-definition [definition out]
-  (.write ^java.io.Writer out (str definition)))
-
 (defn make-dl-definition
   "Creates and returns a DL definition."
   ([target definition-expression]
@@ -413,9 +404,6 @@
 (defalias gci subsumption)
 
 (add-dl-syntax! 'gci)
-
-(defmethod print-method DL-subsumption [susu out]
-  (.write ^java.io.Writer out (str susu)))
 
 ;;;
 

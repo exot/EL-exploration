@@ -52,9 +52,6 @@
   [language vertices neighbours vertex-labels]
   (Description-Graph. language vertices neighbours vertex-labels))
 
-(defmethod print-method Description-Graph [dg out]
-  (.write ^java.io.Writer out (str dg)))
-
 ;;; Normalizing
 
 (defn- conjunctors

@@ -36,9 +36,6 @@
   [^TBox tbox]
   (.definition-map tbox))
 
-(defmethod print-method TBox [tbox out]
-  (.write ^java.io.Writer out (str tbox)))
-
 (defn make-tbox
   "Creates and returns a tbox for language from the given
   definition-map, which must be a mapping from symbols to definitions."

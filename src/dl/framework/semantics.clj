@@ -46,9 +46,6 @@
                (intersection base-set (role-names language))))
   (Interpretation. language base-set interpretation-function))
 
-(defmethod print-method Interpretation [interpretation out]
-  (.write ^java.io.Writer out (str interpretation)))
-
 ;;; Interpretations
 
 (defmulti compile-expression
