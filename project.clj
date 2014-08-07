@@ -19,6 +19,7 @@
   ;:test-paths ["src/tests/"]
   :license "epl-v10"
   :url ""
+  :test-paths ["tests"]
   )
 
 ;;;
