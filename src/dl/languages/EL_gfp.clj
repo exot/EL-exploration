@@ -84,7 +84,8 @@
     (illegal-argument "EL-gfp-lcs called with no concepts."))
   (loop [new-tbox tbox,
          concepts (sort-by #(let [dl-expr (definition-expression (find-definition tbox %))]
-                              (count (filter compound? (arguments dl-expr))))
+                              (or (and (atomic? dl-expr) 1)
+                                  (count (filter compound? (arguments dl-expr)))))
                            concepts)]
     (if (= 1 (count concepts))
       (make-dl-expression-nc language [new-tbox (first concepts)])

@@ -425,4 +425,15 @@
 
 ;;;
 
+(defn conjunction
+  "Given a list of things, append 'and in front of it if its is not a singleton set,
+  otherwise return the only element in that list"
+  [things]
+  (assert (coll? things))
+  (if (singleton? things)
+    (first things)
+    (cons 'and things)))
+
+;;;
+
 nil

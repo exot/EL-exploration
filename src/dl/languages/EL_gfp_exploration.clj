@@ -79,7 +79,7 @@
              interpret     (memoize (fn [C]
                                       (interpret model C))),
              bigsqcap      (memoize (fn [P]
-                                      (make-dl-expression language (cons 'and P))))]
+                                      (make-dl-expression language (conjunction P))))]
 
          (when (and (not= (set initial-ordering) (concept-names language))
                     (not= (count initial-ordering) (count (concept-names language))))
@@ -173,7 +173,7 @@
           sb       (canonical-base K S),
           su       (set-of (make-subsumption pre clc)
                            [impl sb
-                            :let [pre (make-dl-expression language (cons 'and (premise impl))),
+                            :let [pre (make-dl-expression language (conjunction (premise impl))),
                                   clc (model-closure model pre)]
                             :when (not (subsumed-by? pre clc))])]
       su)))

@@ -108,7 +108,7 @@
                                 (expression-term A)
                                 (make-dl-definition language
                                                     (expression-term A)
-                                                    (cons 'and def-A))))
+                                                    (conjunction def-A))))
                       {}
                       tbox-map)))
 
@@ -303,10 +303,9 @@
                                  (make-dl-definition
                                   A
                                   (make-dl-expression language
-                                                      (list* 'and
-                                                             (concat (labels A)
-                                                                     (for [[r B] (neighbours A)]
-                                                                       (list 'exists r B)))))))
+                                                      (conjunction (concat (labels A)
+                                                                           (for [[r B] (neighbours A)]
+                                                                             (list 'exists r B)))))))
                                (vertices description-graph))]
     (make-tbox language definitions)))
 

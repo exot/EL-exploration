@@ -138,10 +138,7 @@
 
         ;; we do the following to have some determinism in the order of the concepts
         unique-expr     (fn [args]
-                          (let [sorted-args (sort-by (comp str expression-term) args)]
-                            (if (singleton? sorted-args)
-                              (first sorted-args)
-                              (cons 'and sorted-args))))
+                          (conjunction (sort-by (comp str expression-term) args)))
         premise         (unique-expr premise-args),
         conclusion      (unique-expr conclusion-args)]
 
