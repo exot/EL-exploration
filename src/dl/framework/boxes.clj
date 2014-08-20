@@ -16,10 +16,12 @@
 (defrecord TBox [language definition-map]
   Object
   (toString [this]
-    (str (list* 'tbox
-                (mapcat #(list (definition-target %)
-                               (definition-expression %))
-                        (vals definition-map))))))
+    (str "(tbox "
+         (print-str (clojure.string/join (interpose ", " (vals definition-map))))
+         ")")))
+
+(defmethod print-method TBox [tbox, ^java.io.Writer w]
+  (.write w (str tbox)))
 
 (defn tbox?
   "Returns true iff thing is a TBox."

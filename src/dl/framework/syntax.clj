@@ -13,16 +13,13 @@
 
 ;;;
 
-(def ^{:dynamic true} *print-with-dl-type*
-  "If true, prints DL data structures with type tag."
-  false)
-
-;;;
-
 (defrecord DL [language-name concept-names role-names constructors]
   Object
   (toString [this]
     (str 'DL " " (name language-name))))
+
+(defmethod print-method DL [dl, ^java.io.Writer w]
+  (.write w (str dl)))
 
 (defn language-name
   "Returns the name of the given language."
@@ -79,9 +76,10 @@
         (reset! hash-cache result)
         result)))
   (toString [this]
-    (if *print-with-dl-type*
-      (str 'DL-expr " " (print-str sexp))
-      (print-str sexp))))
+    (print-str sexp)))
+
+(defmethod print-method DL-expression [dl-expr, ^java.io.Writer w]
+  (.write w (str dl-expr)))
 
 (defn make-dl-expression-nc
   "Creates a DL expression without any checks on already present DL
@@ -342,6 +340,9 @@
   (toString [this]
     (str target " := " dl-expression)))
 
+(defmethod print-method DL-definition [dl-def, ^java.io.Writer w]
+  (.write w (str dl-def)))
+
 (defn definition-target
   "Returns target of this definition."
   [^DL-definition definition]
@@ -367,6 +368,9 @@
   Object
   (toString [this]
     (str "(gci " subsumee " " subsumer ")")))
+
+(defmethod print-method DL-subsumption [sub, ^java.io.Writer w]
+  (.write w (str sub)))
 
 (defn subsumee
   "Returns the subsumee of the given subsumption."

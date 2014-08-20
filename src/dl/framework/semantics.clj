@@ -17,7 +17,10 @@
 (defrecord Interpretation [language base-set function]
   Object
   (toString [this]
-    (str (list 'Interpretation language base-set function))))
+    (str (list 'Interpretation (print-str language) base-set function))))
+
+(defmethod print-method Interpretation [interpretation, ^java.io.Writer w]
+  (.write w (str interpretation)))
 
 (defn interpretation-base-set
   "Returns base set of a given interpretation."
