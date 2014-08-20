@@ -82,17 +82,17 @@
                           {}
                           (tbox-definition-map tbox))),
       target]),
-
+   ;;
    (and (seq? term)
         (= (first term) 'exists))
    (list (first term) (second term) (normalize-EL-gfp-term (nth term 2))),
-
+   ;;
    (and (seq? term)
         (= (first term) 'and))
    (walk normalize-EL-gfp-term
-         #(list* (first term) (minimal-elements % more-specific?))
+         #(conjunction (minimal-elements % more-specific?))
          (rest term)),
-
+   ;;
    :else term))
 
 ;;;
@@ -101,10 +101,10 @@
   "Returns the arguments of the given DL expression as set, if it is not atomic (or
   bottom). If it is, returns the singleton set of the dl-expression itself."
   [dl-expression]
-  (if (or (= (expression-term dl-expression) '(bottom))
-          (atomic? dl-expression))
-    #{dl-expression}
-    (set (arguments dl-expression))))
+  (if (and (compound? dl-expression)
+           (= 'and (operator dl-expression)))
+    (set (arguments dl-expression))
+    #{dl-expression}))
 
 (defn- abbreviate-expression
   "Abbreviates expression with given knowledge."
