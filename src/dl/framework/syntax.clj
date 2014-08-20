@@ -80,8 +80,8 @@
         result)))
   (toString [this]
     (if *print-with-dl-type*
-      (str 'DL-expr " " sexp)
-      (str sexp))))
+      (str 'DL-expr " " (print-str sexp))
+      (print-str sexp))))
 
 (defn make-dl-expression-nc
   "Creates a DL expression without any checks on already present DL
@@ -366,7 +366,7 @@
 (defrecord DL-subsumption [subsumee subsumer]
   Object
   (toString [this]
-    (str (list 'gci subsumee subsumer))))
+    (str "(gci " subsumee " " subsumer ")")))
 
 (defn subsumee
   "Returns the subsumee of the given subsumption."
