@@ -244,6 +244,20 @@
      (def ~name dl#)
      dl#))
 
+(defn dump-dl
+  "Returns a string that serves as a serialization of the given description logic"
+  [dl]
+  (with-out-str
+    (print "(define-dl" (name (language-name dl)) "\n")
+    (print " " (concept-names dl)                 "\n")
+    (print " " (role-names dl)                    "\n")
+    (print " " (constructors dl))
+    (let [derivees (parents (language-name dl))]
+      (assert (<= (count derivees) 1))
+      (when (seq derivees)
+        (print "\n  :extends" (name (first derivees)))))
+    (print ")")))
+
 ;;;
 
 (defn compound?
