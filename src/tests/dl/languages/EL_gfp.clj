@@ -19,7 +19,7 @@
 ;;;
 
 (deftest test-lcs
-  (are [model tbox targets] (let [lcs     (EL-gfp-lcs tbox 'targets),
+  (are [model tbox targets] (let [lcs     (EL-gfp-lcs (interpretation-language model) tbox 'targets),
                                   lcs-int (interpret model lcs)]
                               (forall [target 'targets]
                                 (subset? (interpret model [tbox target])
@@ -32,7 +32,7 @@
        family-model parent [Partner Self]
        family-model parent [Partner Self Child]
        family-model parent [Self Self Self Self])
-  (are [model tbox target] (= (interpret model (EL-gfp-lcs tbox '[target]))
+  (are [model tbox target] (= (interpret model (EL-gfp-lcs (interpretation-language model) tbox '[target]))
                               (interpret model [tbox 'target]))
        some-model some-tbox Grandfather
        some-model some-tbox Grandmother
