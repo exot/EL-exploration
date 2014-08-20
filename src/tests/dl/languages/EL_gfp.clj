@@ -42,17 +42,30 @@
 (deftest test-msc
   (are [testing-model objects] (subset? 'objects
                                         (interpret testing-model (EL-gfp-msc testing-model 'objects)))
+       some-model #{}
        some-model #{John}
        some-model #{John Marry}
        some-model #{John Marry Jana}
        some-model #{John Peter}
        some-model #{Jana Marry}
+       family-model #{}
        family-model #{Paul Linda Mackenzie}
        family-model #{Linda}
        family-model #{Michelle}
        family-model #{Paul Linda James John Michelle Mackenzie}
+       riding-model #{}
        riding-model #{RechtesVorderrad LinkesHinterrad}
-       riding-model #{MeinFahrrad}))
+       riding-model #{MeinFahrrad})
+  (are [testing-model objects mmsc]
+    (= (make-dl-expression (interpretation-language testing-model) 'mmsc)
+       (most-specific-concept testing-model 'objects))
+    ;;
+    some-model #{} (bottom)
+    paper-model #{} (bottom)
+    paper-model #{James} (and Male)
+    paper-model #{John} (and Father Male (exists HasChild (and Female)))
+    family-model #{} (bottom)
+    riding-model #{} (bottom)))
 
 ;;;
 
