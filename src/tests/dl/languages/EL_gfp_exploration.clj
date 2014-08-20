@@ -32,41 +32,35 @@
        ;;
        paper-model (with-dl SimpleDL
                      (list (subsumption (and Female Male)
-                                        (and [(tbox All (and Father Mother (exists HasChild All))),
-                                              All]))
-                           (subsumption (and Father)
-                                        (and (exists HasChild (and)) Male))
-                           (subsumption (and Mother)
+                                        (bottom))
+                           (subsumption Mother
                                         (and Female (exists HasChild (and))))
+                           (subsumption Father
+                                        (and (exists HasChild (and)) Male))
+                           (subsumption (and (exists HasChild (and)) Female)
+                                        Mother)
                            (subsumption (and (exists HasChild (and)) Male)
-                                        (and Father))
-                           (subsumption (and Female (exists HasChild (and)))
-                                        (and Mother))
+                                        Father)
                            (subsumption (and (exists HasChild (and Female))
                                              (exists HasChild (and Male)))
-                                        (and [(tbox All (and Father Mother (exists HasChild All))),
-                                              All]))
+                                        (bottom))
                            (subsumption (and (exists HasChild (and (exists HasChild (and)))))
-                                        (and [(tbox All (and Father Mother (exists HasChild All))),
-                                              All])))),
+                                        (bottom)))),
        ;;
        small-model (with-dl SimpleDL
-                     (list (subsumption (and Mother)
-                                        (and Female (exists HasChild (and Female))))
-                           (subsumption (and Male)
-                                        (and Father))
-                           (subsumption (and Father)
+                     (list (subsumption Male (and Father))
+                           (subsumption Mother
+                                        (and (exists HasChild (and Female)) Female))
+                           (subsumption Father
                                         (and Male))
                            (subsumption (and (exists HasChild (and)))
                                         (and (exists HasChild (and Female))))
                            (subsumption (and (exists HasChild (and Female)) Female)
-                                        (and Mother))
+                                        Mother)
                            (subsumption (and Father Mother)
-                                        (and [(tbox All (and Father Mother (exists HasChild All))),
-                                              All]))
+                                        (bottom))
                            (subsumption (and (exists HasChild (and (exists HasChild (and Female)))))
-                                        (and [(tbox All (and Father Mother (exists HasChild All))),
-                                              All]))))
+                                        (bottom))))
        ;;
        ))
 

@@ -18,7 +18,7 @@
 
 ;;; EL-gfp
 
-(define-dl EL-gfp [] [] [exists and])
+(define-dl EL-gfp [] [] [exists and bottom])
 
 (defn EL-gfp-model-interpretation
   "For a given tbox-target-pair returns the interpretation of the
@@ -64,15 +64,22 @@
 
 (define-subsumption EL-gfp
   [C D]
-  (let [[G-C C-target] (EL-expression->rooted-description-graph C)
-        [G-D D-target] (EL-expression->rooted-description-graph D)]
-    (simulates? G-D G-C D-target C-target)))
+  (cond (= '(bottom) (expression-term C))
+        true
+        ;;
+        (= '(bottom) (expression-term D))
+        false
+        ;;
+        true
+        (let [[G-C C-target] (EL-expression->rooted-description-graph C)
+              [G-D D-target] (EL-expression->rooted-description-graph D)]
+          (simulates? G-D G-C D-target C-target))))
 
 ;;; lcs and msc
 
 (defn EL-gfp-lcs
   "Returns the least common subsumer (in EL-gfp) of A and B in tbox."
-  [tbox concepts]
+  [language tbox concepts]
   (when (empty? concepts)
     (illegal-argument "EL-gfp-lcs called with no concepts."))
   (loop [new-tbox tbox,
@@ -80,7 +87,7 @@
                               (count (filter compound? (arguments dl-expr))))
                            concepts)]
     (if (= 1 (count concepts))
-      [new-tbox (first concepts)]
+      (make-dl-expression-nc language [new-tbox (first concepts)])
       (let [A          (first concepts),
             B          (second concepts),
             [tbox-A A] (clarify-ttp (tidy-up-ttp (clarify-ttp [new-tbox A]))),
@@ -92,7 +99,7 @@
         (if (= #{}
                (set ((vertex-labels G-x-G) [A,B]))
                (set ((neighbours G-x-G) [A,B])))
-          [T target]
+          (make-dl-expression-nc language [T target])
           (recur T (conj (nthnext concepts 2) target)))))))
 
 (defn EL-gfp-msc
@@ -100,25 +107,23 @@
   [model objects]
   (if (not-empty objects)
     (let [tbox (interpretation->tbox model)]
-      (EL-gfp-lcs tbox objects))
-    (let [language (interpretation-language model),
-          all      (make-dl-expression language
-                                       (list* 'and
-                                              (concat (concept-names language)
-                                                      (for [r (role-names language)]
-                                                        (list 'exists r 'All)))))]
-      [(make-tbox language {'All (make-dl-definition 'All all)}), 'All])))
+      (EL-gfp-lcs (interpretation-language model) tbox objects))
+    (make-dl-expression (interpretation-language model) '(bottom))))
 
 (define-msc EL-gfp
   [model objects]
-  (let [[tbox target] (-> (EL-gfp-msc model objects)
-                          clarify-ttp
-                          tidy-up-ttp
-                          reduce-ttp
-                          normalize-EL-gfp-term)]
-    (if (acyclic? tbox)
-      (definition-expression (first (tbox-definitions tbox)))
-      (make-dl-expression-nc (interpretation-language model) [tbox target]))))
+  (let [mmsc (EL-gfp-msc model objects)]
+    (if (= '(bottom) (expression-term mmsc))
+      mmsc
+      (let [[tbox target] (-> mmsc
+                              expression-term
+                              clarify-ttp
+                              tidy-up-ttp
+                              reduce-ttp
+                              normalize-EL-gfp-term)]
+        (if (acyclic? tbox)
+          (definition-expression (first (tbox-definitions tbox)))
+          (make-dl-expression-nc (interpretation-language model) [tbox target]))))))
 
 ;;; unravelling
 

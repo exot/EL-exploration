@@ -98,31 +98,33 @@
 ;;;
 
 (defn- arguments*
-  "Returns the arguments of the given DL expression as set, if it is
-  not atomic. If it is, returns the singleton set of the dl-expression
-  itself."
+  "Returns the arguments of the given DL expression as set, if it is not atomic (or
+  bottom). If it is, returns the singleton set of the dl-expression itself."
   [dl-expression]
-  (if (atomic? dl-expression)
+  (if (or (= (expression-term dl-expression) '(bottom))
+          (atomic? dl-expression))
     #{dl-expression}
     (set (arguments dl-expression))))
 
 (defn- abbreviate-expression
   "Abbreviates expression with given knowledge."
   [expression knowledge]
-  (let [language              (expression-language expression),
-        implication-closure   (memoize (clop-by-implications knowledge)),
-        simple-more-specific? more-specific?]
-    (with-altered-vars [more-specific? (constantly
-                                        (fn spec?
-                                          ([t-1 t-2]
-                                             (simple-more-specific?
-                                              t-1
-                                              t-2
-                                              #(contains? (implication-closure #{(make-dl-expression-nc language %1)})
-                                                          (make-dl-expression-nc language %2))))
-                                          ([t-1 t-2 fallback]
-                                             (spec? t-1 t-2))))]
-      (make-dl-expression-nc language (normalize-EL-gfp-term (expression-term expression))))))
+  (if (= (expression-term expression) '(bottom))
+    expression
+    (let [language              (expression-language expression),
+          implication-closure   (memoize (clop-by-implications knowledge)),
+          simple-more-specific? more-specific?]
+      (with-altered-vars [more-specific? (constantly
+                                          (fn spec?
+                                            ([t-1 t-2]
+                                               (simple-more-specific?
+                                                t-1
+                                                t-2
+                                                #(contains? (implication-closure #{(make-dl-expression-nc language %1)})
+                                                            (make-dl-expression-nc language %2))))
+                                            ([t-1 t-2 fallback]
+                                               (spec? t-1 t-2))))]
+        (make-dl-expression-nc language (normalize-EL-gfp-term (expression-term expression)))))))
 
 (defn abbreviate-subsumption
   "Takes a subsumption whose subsumee and subsumer are in normal form
@@ -135,8 +137,14 @@
                                     premise-args),
 
         ;; we do the following to have some determinism in the order of the concepts
-        premise         (cons 'and (sort-by (comp str expression-term) premise-args)),
-        conclusion      (cons 'and (sort-by (comp str expression-term) conclusion-args))]
+        unique-expr     (fn [args]
+                          (let [sorted-args (sort-by (comp str expression-term) args)]
+                            (if (singleton? sorted-args)
+                              (first sorted-args)
+                              (cons 'and sorted-args))))
+        premise         (unique-expr premise-args),
+        conclusion      (unique-expr conclusion-args)]
+
     (make-subsumption (abbreviate-expression (make-dl-expression language premise)
                                              background-knowledge)
                       (abbreviate-expression (make-dl-expression language conclusion)
