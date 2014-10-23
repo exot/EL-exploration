@@ -315,7 +315,7 @@
   (let [language      (interpretation-language interpretation),
         int-func      (interpretation-function interpretation),
         vertices      (interpretation-base-set interpretation),
-        
+
         neighbours    (memo-fn _ [x]
                         (set-of [r y] [r (role-names language),
                                        [_ y] (filter #(= (first %) x) (int-func r))])),
