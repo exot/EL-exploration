@@ -80,6 +80,30 @@
     some-normal-tbox
     parent))
 
+(deftest test-EL-concept-description<->description-tree
+  (let [sample-dl-graph (make-description-graph (make-dl 'SimpleDL
+                                                         '[A B C]
+                                                         '[R S T]
+                                                         '[and exists])
+                                                '#{a b c}
+                                                '{a [[R b], [S c]]}
+                                                '{a [A B],
+                                                  b [A C],
+                                                  c [B]})]
+    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'a))
+           '(and A B (exists R (and A C)) (exists S B))))
+    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'c))
+           'B))
+    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'b))
+           '(and A C)))
+    (doseq [x '[a b c]]
+      (is (= (expression-term
+              (apply description-tree->EL-concept-description
+                     (EL-concept-description->description-tree
+                      (description-tree->EL-concept-description sample-dl-graph x))))
+             (expression-term
+              (description-tree->EL-concept-description sample-dl-graph x)))))))
+
 ;;;
 
 nil
