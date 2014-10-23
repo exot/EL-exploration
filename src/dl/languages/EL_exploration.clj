@@ -64,10 +64,10 @@
         S        (canonical-base-from-base
                   (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
         sb       (canonical-base K S),
-        su       (set-of (make-subsumption pre clc)
+        su       (set-of (make-subsumption pre clc) ; some rewriting may be helpful as well
                          [impl sb
                           :let [pre (make-dl-expression language (conjunction (premise impl))),
-                                clc (EL-mmsc-with-role-depth-bound d model (interpret model pre))]
+                                clc (EL-mmsc-with-role-depth-bound language d model (interpret model pre))]
                           :when (not (subsumed-by? pre clc))])]
     su))
 

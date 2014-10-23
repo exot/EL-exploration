@@ -48,7 +48,7 @@
                       [product-root root]]))
                  (EL-concept-description->description-tree (first concepts))
                  (rest concepts))]
-     (description-tree->EL-concept-description product root))))
+     (description-tree->EL-concept-description language product root))))
 
 (defn EL-mmsc-with-role-depth-bound
   "Returns the model based most specific concept in EL of `objects' in `model' with given
@@ -58,6 +58,7 @@
     (EL-lcs language
             (map (fn [x]
                    (apply description-tree->EL-concept-description
+                          language
                           (prune-description-graph d interpretation-graph x)))
                  objects))))
 
