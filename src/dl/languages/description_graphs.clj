@@ -411,7 +411,7 @@
   returns the unraveling of the graph starting at target of depth at most k.  The result
   returned is a vector [G x] of two entries, where `G' is the unravelled description graph
   and `x' is the renamed root node corresponding to the initially given target."
-  [graph target k]
+  [k graph target]
   (let [renamed (atom {}),
         neighs  (atom {})]
     (letfn [(collect [node current-depth] ;constraint: returns new name of node

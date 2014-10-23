@@ -133,9 +133,9 @@
   subsuming dl-expr that has role depth at most k."
   [dl-expr k]
   (let [[tbox target] (expression-term (ensure-EL-gfp-concept dl-expr)),
-        [graph target] (prune-description-graph (tbox->description-graph tbox)
-                                                target
-                                                k),
+        [graph target] (prune-description-graph k
+                                                (tbox->description-graph tbox)
+                                                target),
         [tbox target] (reduce-ttp [(description-graph->tbox graph) target])]
     ;; the resulting tbox is acyclic and only contains one definition
     (definition-expression (first (tbox-definitions tbox)))))
