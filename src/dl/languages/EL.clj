@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.languages.EL-gfp
+(ns dl.languages.EL
   "Definitions for the description logic EL-gfp."
   (:use conexp.main
         dl.framework.syntax
