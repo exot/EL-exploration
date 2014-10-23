@@ -43,7 +43,7 @@
   the given interpretation."
   [interpretation]
   (with-memoized-fns [EL-expression->rooted-description-graph,
-                      most-specific-concept,
+                      EL-gfp-mmsc,
                       interpretation->tbox,
                       interpretation->description-graph]
     (let [i    interpretation,
@@ -52,12 +52,12 @@
                        (map #(make-dl-expression lang %)
                             (concept-names lang))
                        (mapcat (fn [objs]
-                                 (let [msc (expression-term (most-specific-concept i objs))]
+                                 (let [msc (expression-term (EL-gfp-mmsc lang i objs))]
                                    (for [r (role-names lang)]
                                      (make-dl-expression lang (list 'exists r msc)))))
                                (drop-while empty?
                                            (all-closed-sets (seq (interpretation-base-set i))
-                                                            #(interpret i (most-specific-concept i %))))))]
+                                                            #(interpret i (EL-gfp-mmsc lang i %))))))]
       (doall M_I))))
 
 ;;; actual exploration algorithm
@@ -75,7 +75,7 @@
                          interpretation->description-graph]
        (let [language      (interpretation-language model),
              model-closure (memoize (fn [concept-description]
-                                      (model-closure model concept-description))),
+                                      (EL-gfp-mmsc language model (interpret model concept-description)))),
              interpret     (memoize (fn [C]
                                       (interpret model C))),
              bigsqcap      (memoize (fn [P]
@@ -174,7 +174,7 @@
           su       (set-of (make-subsumption pre clc)
                            [impl sb
                             :let [pre (make-dl-expression language (conjunction (premise impl))),
-                                  clc (model-closure model pre)]
+                                  clc (EL-gfp-mmsc language model (interpret model pre))]
                             :when (not (subsumed-by? pre clc))])]
       su)))
 

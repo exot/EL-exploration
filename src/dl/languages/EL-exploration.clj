@@ -40,9 +40,8 @@
 (defn essential-concept-descriptions
   "Returns the list of all “essential concept descriptions of given role-depth” (the set
   M_{interpretation,d}) of the given `interpretation'."
-  [d interpretation]
-  (let [language (interpretation-language interpretation),
-        mmsc     #(EL-mmsc-with-role-depth-bound (dec d) interpretation %)]
+  [language d interpretation]
+  (let [mmsc     #(EL-mmsc-with-role-depth-bound language (dec d) interpretation %)]
     (concat (list (make-dl-expression language '(bottom)))
             (map #(make-dl-expression language %)
                  (concept-names language))

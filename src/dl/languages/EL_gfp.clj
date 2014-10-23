@@ -79,41 +79,38 @@
 
 (defn EL-gfp-lcs
   "Returns the least common subsumer (in EL-gfp) of A and B in tbox."
-  [language tbox concepts]
-  (when (empty? concepts)
-    (illegal-argument "EL-gfp-lcs called with no concepts."))
-  (loop [new-tbox tbox,
-         concepts (sort-by #(let [dl-expr (definition-expression (find-definition tbox %))]
-                              (or (and (atomic? dl-expr) 1)
-                                  (count (filter compound? (arguments dl-expr)))))
-                           concepts)]
-    (if (= 1 (count concepts))
-      (make-dl-expression-nc language [new-tbox (first concepts)])
-      (let [A          (first concepts),
-            B          (second concepts),
-            [tbox-A A] (clarify-ttp (tidy-up-ttp (clarify-ttp [new-tbox A]))),
-            [tbox-B B] (clarify-ttp (tidy-up-ttp (clarify-ttp [tbox B]))),
-            G_T_A      (tbox->description-graph tbox-A),
-            G_T_B      (tbox->description-graph tbox-B),
-            G-x-G      (graph-product G_T_A G_T_B [A,B]),
-            [T target] (uniquify-ttp [(description-graph->tbox G-x-G) [A,B]])]
-        (if (= #{}
-               (set ((vertex-labels G-x-G) [A,B]))
-               (set ((neighbours G-x-G) [A,B])))
-          (make-dl-expression-nc language [T target])
-          (recur T (conj (nthnext concepts 2) target)))))))
+  [tbox concepts]
+  (let [language (tbox-language tbox)]
+    (when (empty? concepts)
+      (illegal-argument "EL-gfp-lcs called with no concepts."))
+    (loop [new-tbox tbox,
+           concepts (sort-by #(let [dl-expr (definition-expression (find-definition tbox %))]
+                                (or (and (atomic? dl-expr) 1)
+                                    (count (filter compound? (arguments dl-expr)))))
+                             concepts)]
+      (if (= 1 (count concepts))
+        (make-dl-expression-nc language [new-tbox (first concepts)])
+        (let [A          (first concepts),
+              B          (second concepts),
+              [tbox-A A] (clarify-ttp (tidy-up-ttp (clarify-ttp [new-tbox A]))),
+              [tbox-B B] (clarify-ttp (tidy-up-ttp (clarify-ttp [tbox B]))),
+              G_T_A      (tbox->description-graph tbox-A),
+              G_T_B      (tbox->description-graph tbox-B),
+              G-x-G      (graph-product G_T_A G_T_B [A,B]),
+              [T target] (uniquify-ttp [(description-graph->tbox G-x-G language) [A,B]])]
+          (if (= #{}
+                 (set ((vertex-labels G-x-G) [A,B]))
+                 (set ((neighbours G-x-G) [A,B])))
+            (make-dl-expression-nc language [T target])
+            (recur T (conj (nthnext concepts 2) target))))))))
 
-(defn EL-gfp-msc
+(defn EL-gfp-mmsc
   "Returns the model based most specific concept of objects in model."
-  [model objects]
-  (if (not-empty objects)
-    (let [tbox (interpretation->tbox model)]
-      (EL-gfp-lcs (interpretation-language model) tbox objects))
-    (make-dl-expression (interpretation-language model) '(bottom))))
-
-(define-msc EL-gfp
-  [model objects]
-  (let [mmsc (EL-gfp-msc model objects)]
+  [language model objects]
+  (let [mmsc (if (not-empty objects)
+               (let [tbox (interpretation->tbox model language)]
+                 (EL-gfp-lcs tbox objects))
+               (make-dl-expression language '(bottom)))]
     (if (= '(bottom) (expression-term mmsc))
       mmsc
       (let [[tbox target] (-> mmsc
@@ -124,21 +121,7 @@
                               normalize-EL-gfp-term)]
         (if (acyclic? tbox)
           (definition-expression (first (tbox-definitions tbox)))
-          (make-dl-expression-nc (interpretation-language model) [tbox target]))))))
-
-;;; unravelling
-
-(defn EL-gfp-unravel
-  "Returns the k-unravelling of dl-expr, i.e. the most specific concept description
-  subsuming dl-expr that has role depth at most k."
-  [dl-expr k]
-  (let [[tbox target] (expression-term (ensure-EL-gfp-concept dl-expr)),
-        [graph target] (prune-description-graph k
-                                                (tbox->description-graph tbox)
-                                                target),
-        [tbox target] (reduce-ttp [(description-graph->tbox graph) target])]
-    ;; the resulting tbox is acyclic and only contains one definition
-    (definition-expression (first (tbox-definitions tbox)))))
+          (make-dl-expression-nc language [tbox target]))))))
 
 ;;;
 

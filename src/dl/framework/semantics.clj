@@ -180,34 +180,6 @@
   [name language base-set & interpretations]
   `(def ~name (interpretation ~language ~base-set ~@interpretations)))
 
-
-;;; most specific concepts
-
-(defmulti most-specific-concept
-  "Computes the model based most specific concept of a set of objects
-  in a given interpretation."
-  (fn [model dl-exp]
-    (language-name (interpretation-language model))))
-
-(defmethod most-specific-concept :default [model _]
-  (illegal-argument "Language "
-                    (print-str (interpretation-language model))
-                    " does not provide msc."))
-
-(defmacro define-msc
-  "Defines model based most specific concepts for a language, a model
-  and a set of objects. Must return a dl-expression."
-  [language [model objects] & body]
-  `(defmethod most-specific-concept (language-name ~language)
-     [~model ~objects]
-     ~@body))
-
-(defn model-closure
-  "Return the most specific concept of the interpretation of dl-exp in
-  model."
-  [model dl-exp]
-  (most-specific-concept model (interpret model dl-exp)))
-
 ;;;
 
 (defn extend-interpretation
