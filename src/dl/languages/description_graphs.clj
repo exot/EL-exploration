@@ -26,6 +26,11 @@
                neighbours
                vertex-labels))))
 
+(defn description-graph?
+  "Predicate to decide whether something is a description graph or not."
+  [something]
+  (instance? Description-Graph something))
+
 (defn vertices
   "Returns vertices of given description graph."
   [^Description-Graph description-graph]
@@ -334,8 +339,14 @@
     tbox))
 
 (defn EL-concept-description->description-tree
-  "WRITEME"
+  "Given an EL concept description `concept-description', returns a vector [G v], where
+  `G' is the description tree of `concept-description', and `v' is the root of `G'."
   [concept-description]
+  (assert (dl-expression? concept-description)
+          "Argument `concept-description' must be a concept description")
+  (assert (subset? (set (constructors (expression-language concept-description)))
+                   '#{and exists})
+          "Argument `concept-description' must be a EL concept description.")
   (let [language     (expression-language concept-description),
         root         (gensym),
         args         (if-not (atomic? concept-description)
@@ -370,8 +381,16 @@
      root]))
 
 (defn description-tree->EL-concept-description
-  "WRITEME"
+  "Given a description tree `description-graph' and its root `root', returns the
+  corresponding EL concept description.
+
+  Note: This function does not check whether the given description graph is acylic.  If
+  its not, and the cycle is reachable from root, then this function will not terminate. "
   [description-graph root]
+  (assert (description-graph? description-graph)
+          "Argument `description-graph' must be a description graph.")
+  (assert (contains? (vertices description-graph) root)
+          "Argument `root' is not a vertex of the given description graph.")
   (let [labels                 ((vertex-labels description-graph) root),
         role-successors        ((neighbours description-graph) root),
         arguments              (concat labels
