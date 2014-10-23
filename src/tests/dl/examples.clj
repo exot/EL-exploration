@@ -15,7 +15,6 @@
         dl.framework.semantics
         dl.languages.description-graphs
         dl.languages.EL-gfp
-        dl.languages.EL-gfp-exploration
         dl.languages.interaction)
   (:use clojure.test))
 
