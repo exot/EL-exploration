@@ -53,9 +53,9 @@
 (defn EL-mmsc-with-role-depth-bound
   "Returns the model based most specific concept in EL of `objects' in `model' with given
   role-depth bound `d'."
-  [d model objects]
+  [language d model objects]
   (let [interpretation-graph (interpretation->description-graph model)]
-    (EL-lcs (interpretation-language model)
+    (EL-lcs language
             (map (fn [x]
                    (apply description-tree->EL-concept-description
                           (prune-description-graph d interpretation-graph x)))

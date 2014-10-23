@@ -37,7 +37,8 @@
     (illegal-argument "Given subsumption "
                       (print-str subsumption)
                       " is already wrong in model."))
-  (let [language    (interpretation-language model),
+  (let [concept-names (set (interpretation-concept-names model)),
+        role-name   (set (interpretation-role-names model)),
         old-objects (interpretation-base-set model),
 
         new-objects (ask "Please enter your new objects: "
@@ -52,41 +53,41 @@
                                     (Character/isUpperCase ^Character (first (str s))))
                                   %)
                          (str "New objects need to start with a capital letter.\n")),
-        
+
         interfun    (loop [objects    (seq new-objects),
                            attributes {}]
-                         (if (empty? objects)
-                           attributes
-                           (let [next-object (first objects),
-                                 new-attributes
-                                 (loop []
-                                   (println (str "Please enter concept-names and role-relations which are satisfied by " next-object ":"))
-                                   (let [new-attributes (read-string (str "(" (read-line) ")"))]
-                                     (if-let [invalid (first (filter #(not (or (symbol? %)
-                                                                               (and (seq? %) (= 2 (count %)))))
-                                                                     new-attributes))]
-                                       (do
-                                         (println (str "Attribute " invalid " is invalid, i.e. it's neither a symbol nor a pair."))
-                                         (recur))
-                                       (if-let [invalid (first (for [att new-attributes
-                                                                     :when (or (and (symbol? att)
-                                                                                    (not (contains? (concept-names language) att)))
-                                                                               (and (seq? att)
-                                                                                    (or (not (contains? (role-names language) (first att)))
-                                                                                        (not (contains? new-objects (second att))))))]
-                                                                 att))]
-                                         (do
-                                           (if (symbol? invalid)
-                                             (println (str invalid
-                                                           " is not a valid concept name."))
-                                             (println (str invalid
-                                                           " does not contain a valid role name or has an invalid object\n"
-                                                           "(note that you can only use new objects in role specifications.)")))
-                                           (recur))
-                                         new-attributes))))]
-                             (recur (rest objects)
-                                    (assoc attributes next-object new-attributes))))),
-        
+                      (if (empty? objects)
+                        attributes
+                        (let [next-object (first objects),
+                              new-attributes
+                              (loop []
+                                (println (str "Please enter concept-names and role-relations which are satisfied by " next-object ":"))
+                                (let [new-attributes (read-string (str "(" (read-line) ")"))]
+                                  (if-let [invalid (first (filter #(not (or (symbol? %)
+                                                                            (and (seq? %) (= 2 (count %)))))
+                                                                  new-attributes))]
+                                    (do
+                                      (println (str "Attribute " invalid " is invalid, i.e. it's neither a symbol nor a pair."))
+                                      (recur))
+                                    (if-let [invalid (first (for [att new-attributes
+                                                                  :when (or (and (symbol? att)
+                                                                                 (not (contains? concept-names att)))
+                                                                            (and (seq? att)
+                                                                                 (or (not (contains? role-names (first att)))
+                                                                                     (not (contains? new-objects (second att))))))]
+                                                              att))]
+                                      (do
+                                        (if (symbol? invalid)
+                                          (println (str invalid
+                                                        " is not a valid concept name."))
+                                          (println (str invalid
+                                                        " does not contain a valid role name or has an invalid object\n"
+                                                        "(note that you can only use new objects in role specifications.)")))
+                                        (recur))
+                                      new-attributes))))]
+                          (recur (rest objects)
+                                 (assoc attributes next-object new-attributes))))),
+
         new-att-map (loop [pairs   interfun,
                            att-map (interpretation-function model)]
                       (if (empty? pairs)
@@ -99,8 +100,8 @@
                                              (update-in att-map [(first att)] conj [object (second att)])))
                                          att-map
                                          attributes))))),
-        
-        new-model (make-interpretation language (union old-objects new-objects) new-att-map)]
+
+        new-model (make-interpretation concept-names role-names (union old-objects new-objects) new-att-map)]
 
     (if (holds-in-interpretation? new-model subsumption)
       (do

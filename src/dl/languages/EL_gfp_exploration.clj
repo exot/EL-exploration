@@ -47,7 +47,11 @@
                       interpretation->tbox,
                       interpretation->description-graph]
     (let [i    interpretation,
-          lang (interpretation-language i),
+          lang (make-dl (gensym "DL-")
+                        (interpretation-concept-names i)
+                        (interpretation-role-names i)
+                        '[]
+                        :extends EL-gfp),
           M_I  (concat (list (make-dl-expression lang '(bottom)))
                        (map #(make-dl-expression lang %)
                             (concept-names lang))
@@ -66,14 +70,18 @@
   "Returns base of given interpretation."
   ;;
   ([model]
-     (model-gcis model (concept-names (interpretation-language model))))
+     (model-gcis model (interpretation-concept-names model)))
   ;;
   ([model initial-ordering]
      (with-memoized-fns [EL-expression->rooted-description-graph,
                          subsumed-by?,
                          interpretation->tbox,
                          interpretation->description-graph]
-       (let [language      (interpretation-language model),
+       (let [language      (make-dl (gensym "DL-")
+                                    (interpretation-concept-names model)
+                                    (interpretation-role-names model)
+                                    '[]
+                                    :extends EL-gfp),
              model-closure (memoize (fn [concept-description]
                                       (EL-gfp-mmsc language model (interpret model concept-description)))),
              interpret     (memoize (fn [C]
@@ -141,7 +149,7 @@
                                                (set-of (make-implication #{C} #{D})
                                                        | C new-concepts, D M
                                                        :when (subsumed-by? C D))),
-                   
+
                    ;; compute next pseudo-intent
                    next-P               (next-closed-set next-M
                                                          (clop-by-implications
@@ -165,7 +173,11 @@
   (with-memoized-fns [EL-expression->rooted-description-graph,
                       interpretation->tbox]
 
-    (let [language (interpretation-language model),
+    (let [language (make-dl (gensym "DL-")
+                            (interpretation-concept-names model)
+                            (interpretation-role-names model)
+                            '[]
+                            :extends EL-gfp),
           M_i      (essential-concept-descriptions model),
           K        (induced-context M_i model),
           S        (canonical-base-from-base

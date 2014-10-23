@@ -26,7 +26,11 @@
   "Tests a TBox on being normalized."
   [tbox]
   (forall [def (tbox-definitions tbox)]
-    (forall [term (arguments (definition-expression def))]
+    (forall [term (let [definition (definition-expression def)]
+                    (if (and (compound? definition)
+                             (= 'and (operator definition)))
+                      (arguments definition)
+                      (list definition)))]
       (or (primitive? term)
           (and (compound? term)
                (= 'exists (operator term))
@@ -48,20 +52,25 @@
        6 some-tbox
        6 paper-tbox
        1 all-tbox)
-  (are [model testing-tbox target] (= (interpret model [testing-tbox target])
-                                      (interpret model [(normalize-gfp testing-tbox) target]))
-       some-model some-tbox 'Grandfather
-       some-model some-tbox 'Grandmother
-       some-model some-normal-tbox 'A
-       some-model some-normal-tbox 'B
-       some-model some-normal-tbox 'T
-       some-model all-tbox 'All
-       family-model parent 'Self
-       family-model parent 'Partner
-       family-model parent 'Child
-       family-model paper-tbox 'A-1
-       family-model paper-tbox 'A-2
-       family-model paper-tbox 'A-3))
+  (are [language model testing-tbox target] (= (interpret model
+                                                          (make-dl-expression language
+                                                                              [testing-tbox target]))
+                                               (interpret model
+                                                          (make-dl-expression language
+                                                                              [(normalize-gfp testing-tbox)
+                                                                               target])))
+       SimpleDL some-model some-tbox 'Grandfather
+       SimpleDL some-model some-tbox 'Grandmother
+       SimpleDL some-model some-normal-tbox 'A
+       SimpleDL some-model some-normal-tbox 'B
+       SimpleDL some-model some-normal-tbox 'T
+       SimpleDL some-model all-tbox 'All
+       FamilyDL family-model parent 'Self
+       FamilyDL family-model parent 'Partner
+       FamilyDL family-model parent 'Child
+       FamilyDL family-model paper-tbox 'A-1
+       FamilyDL family-model paper-tbox 'A-2
+       FamilyDL family-model paper-tbox 'A-3))
 
 (deftest test-simulator-sets
   (are [model] (let [graph (interpretation->description-graph model)]
@@ -81,24 +90,24 @@
     parent))
 
 (deftest test-EL-concept-description<->description-tree
-  (let [sample-dl-graph (make-description-graph '#{a b c}
+  (let [simple-dl       (make-dl "SimpleDL" '[A B C] '[R S] '[and exists bottom])
+        sample-dl-graph (make-description-graph '#{a b c}
                                                 '{a [[R b], [S c]]}
                                                 '{a [A B],
                                                   b [A C],
                                                   c [B]})]
-    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'a))
+    (is (= (expression-term (description-tree->EL-concept-description simple-dl sample-dl-graph 'a))
            '(and A B (exists R (and A C)) (exists S B))))
-    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'c))
+    (is (= (expression-term (description-tree->EL-concept-description simple-dl sample-dl-graph 'c))
            'B))
-    (is (= (expression-term (description-tree->EL-concept-description sample-dl-graph 'b))
+    (is (= (expression-term (description-tree->EL-concept-description simple-dl sample-dl-graph 'b))
            '(and A C)))
     (doseq [x '[a b c]]
-      (is (= (expression-term
-              (apply description-tree->EL-concept-description
-                     (EL-concept-description->description-tree
-                      (description-tree->EL-concept-description sample-dl-graph x))))
-             (expression-term
-              (description-tree->EL-concept-description sample-dl-graph x)))))))
+      (is (= (apply description-tree->EL-concept-description
+                    simple-dl
+                    (EL-concept-description->description-tree
+                     (description-tree->EL-concept-description simple-dl sample-dl-graph x)))
+             (description-tree->EL-concept-description simple-dl sample-dl-graph x))))))
 
 ;;;
 

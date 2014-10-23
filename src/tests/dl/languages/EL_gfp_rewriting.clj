@@ -31,12 +31,12 @@
                                      (exists HasChild B)))
                  #{(make-implication #{(dl-expression A)}
                                      #{(dl-expression B)})})
-             (dl-expression (and (exists HasChild A)))))
+             (dl-expression (exists HasChild A))))
       (is (= (ab (dl-expression (and (exists HasChild B)
                                      (exists HasChild A)))
                  #{(make-implication #{(dl-expression A)}
                                      #{(dl-expression B)})})
-             (dl-expression (and (exists HasChild A)))))
+             (dl-expression (exists HasChild A))))
       (is (= (ab (dl-expression (and (exists HasChild A)
                                      (exists HasChild B)
                                      (exists HasChild C)))
@@ -44,11 +44,11 @@
                                      #{(dl-expression B)}),
                    (make-implication #{(dl-expression (exists HasChild A))}
                                      #{(dl-expression (exists HasChild C))})})
-             (dl-expression (and (exists HasChild A)))))
+             (dl-expression (exists HasChild A))))
       (is (= (ab (dl-expression (and A (exists HasChild A)))
                  #{(make-implication #{(dl-expression (exists HasChild A))}
                                      #{(dl-expression A)})})
-             (dl-expression (and (exists HasChild A))))))))
+             (dl-expression (exists HasChild A)))))))
 
 (deftest test-normalize-EL-gfp-term
   (are [term norm-term] (= (normalize-EL-gfp-term 'term) 'norm-term)
@@ -56,7 +56,7 @@
        (and A B C D E),
        (and (exists HasChild (and (exists HasChild A) (exists HasChild B)))
             (exists HasChild (and (exists HasChild A))))
-       (and (exists HasChild (and (exists HasChild A) (exists HasChild B))))))
+       (exists HasChild (and (exists HasChild A) (exists HasChild B)))))
 
 ;;;
 

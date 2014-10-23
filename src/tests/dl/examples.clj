@@ -27,59 +27,69 @@
 
 (def dl-exp-2 (dl-expression SimpleDL (nominal John Peter)))
 
-(with-dl SimpleDL
+(def some-model (interpretation '[Mother Father Male Female]
+                                '[HasChild]
+                                #{John Marry Peter Jana}
+                                Mother #{Marry},
+                                Father #{John, Peter},
+                                Male   #{John, Peter},
+                                Female #{Marry, Jana},
+                                HasChild #{[John Peter], [Marry Peter], [Peter Jana]}))
 
-  (def some-model (interpretation #{John Marry Peter Jana}
-                                  Mother #{Marry},
-                                  Father #{John, Peter},
-                                  Male   #{John, Peter},
-                                  Female #{Marry, Jana},
-                                  HasChild #{[John Peter], [Marry Peter], [Peter Jana]}))
+(def empty-model (interpretation []
+                                 []
+                                 #{}
+                                 Mother #{}
+                                 Father #{}
+                                 Male   #{}
+                                 Female #{}
+                                 HasChild #{}))
 
-  (def empty-model (interpretation #{}
-                                   Mother #{}
-                                   Father #{}
-                                   Male   #{}
-                                   Female #{}
-                                   HasChild #{}))
+(def some-tbox (tbox SimpleDL
+                     Grandfather (and Male (exists HasChild (exists HasChild (and))))
+                     Grandmother (and Female (exists HasChild (exists HasChild (and))))))
 
-  (def some-tbox (tbox Grandfather (and Male (exists HasChild (exists HasChild (and))))
-                       Grandmother (and Female (exists HasChild (exists HasChild (and))))))
+(def some-normal-tbox (tbox SimpleDL
+                            A (and Male Father (exists HasChild B)),
+                            B (and Female (exists HasChild T)),
+                            T (and)))
 
-  (def some-normal-tbox (tbox A (and Male Father (exists HasChild B)),
-                              B (and Female (exists HasChild T)),
-                              T (and)))
+(def all-tbox (tbox SimpleDL
+                    All (and Male Female Mother Father (exists HasChild All))))
 
-  (def all-tbox (tbox All (and Male Female Mother Father (exists HasChild All))))
+(def all-cpt (dl-expression SimpleDL [all-tbox All]))
 
-  (def all-cpt (dl-expression [all-tbox All]))
+(def ext-dl-exp (dl-expression SimpleDL [some-tbox, Grandfather]))
+(def ext-dl-exp-2 (dl-expression SimpleDL (and [some-tbox, Grandfather])))
 
-  (def ext-dl-exp (dl-expression [some-tbox, Grandfather]))
-  (def ext-dl-exp-2 (dl-expression (and [some-tbox, Grandfather])))
+(def paper-model (interpretation '[Male Female Father Mother]
+                                 '[HasChild]
+                                 [John Michelle Mackenzie Paul Linda James]
+                                 Male   #{John Paul James}
+                                 Female #{Michelle Mackenzie Linda}
+                                 Father #{John Paul}
+                                 Mother #{Michelle Linda}
+                                 HasChild #{[John Mackenzie] [Michelle Mackenzie]
+                                            [Paul James] [Linda James]}))
 
-  (def paper-model (interpretation [John Michelle Mackenzie Paul Linda James]
-                                   Male   #{John Paul James}
-                                   Female #{Michelle Mackenzie Linda}
-                                   Father #{John Paul}
-                                   Mother #{Michelle Linda}
-                                   HasChild #{[John Mackenzie] [Michelle Mackenzie]
-                                              [Paul James] [Linda James]}))
+(def small-model (interpretation '[Male Female Father Mother]
+                                 '[HasChild]
+                                 [John Michelle Mackenzie]
+                                 Male   #{John}
+                                 Female #{Michelle Mackenzie}
+                                 Mother #{Michelle}
+                                 Father #{John}
+                                 HasChild #{[John Mackenzie] [Michelle Mackenzie]}))
 
-  (def small-model (interpretation [John Michelle Mackenzie]
-                                   Male   #{John}
-                                   Female #{Michelle Mackenzie}
-                                   Mother #{Michelle}
-                                   Father #{John}
-                                   HasChild #{[John Mackenzie] [Michelle Mackenzie]}))
-
-  nil)
+nil
 
 ;;; Fahrräder
 
 (define-dl RidingDL [Fahrzeug, Fahrrad, Rad, Auto] [HatKomponente] []
   :extends EL-gfp)
 
-(def riding-model (interpretation RidingDL
+(def riding-model (interpretation '[Fahrzeug Fahrrad Rad Auto]
+                                  '[HatKomponente]
                                   [MeinFahrrad, Hinterrad, Vorderrad, FranzSeinAuto,
                                    LinkesHinterrad, RechtesHinterrad, LinkesVorderrad, RechtesVorderrad]
                                   Fahrzeug #{MeinFahrrad, FranzSeinAuto},
@@ -105,7 +115,8 @@
                   Partner (and (exists HasChild Child) (exists MarriedTo Self)),
                   Self (and (exists HasChild Child) (exists MarriedTo Partner))))
 
-(def family-model (interpretation FamilyDL
+(def family-model (interpretation '[Mother Female Father Male]
+                                  '[MarriedTo HasChild]
                                   [John Michelle Mackenzie Paul Linda James]
                                   Male   #{John Paul James}
                                   Female #{Michelle Mackenzie Linda}
@@ -116,7 +127,8 @@
                                   MarriedTo #{[Paul Linda] [Linda Paul]
                                               [John Michelle] [Michelle John]}))
 
-(def more-family-model (interpretation FamilyDL
+(def more-family-model (interpretation '[Mother Female Father Male]
+                                       '[MarriedTo HasChild]
                                        [Jana Paul Tom Martin Kathrin Thomas Clarissa Jean Elisabeth Andrea]
                                        Female #{Jana Kathrin Clarissa Elisabeth Andrea}
                                        Male   #{Paul Tom Martin Thomas Jean}
@@ -130,7 +142,8 @@
                                                    [Martin Kathrin] [Kathrin Martin]
                                                    [Jean Elisabeth] [Elisabeth Jean]}))
 
-(def grandparent-model (interpretation FamilyDL
+(def grandparent-model (interpretation '[Mother Female Father Male]
+                                       '[MarriedTo HasChild]
                                        [A B C D E F G H]
                                        Female #{A C E G}
                                        Male   #{B D F H}
@@ -144,7 +157,8 @@
                                                    [C D] [D C]
                                                    [E F] [F E]}))
 
-(def family-2-model (interpretation FamilyDL
+(def family-2-model (interpretation '[Mother Female Father Male]
+                                    '[MarriedTo HasChild]
                                     [A B C]
                                     Female #{A}
                                     Male   #{B C}
@@ -153,7 +167,8 @@
                                     HasChild #{[A C] [B C]}
                                     MarriedTo #{[A B] [B A]}))
 
-(def family-3-model (interpretation FamilyDL
+(def family-3-model (interpretation '[Mother Female Father Male]
+                                    '[MarriedTo HasChild]
                                     [A B C]
                                     Female #{A}
                                     Male   #{B C}
@@ -162,7 +177,8 @@
                                     HasChild #{[A C] [B C] [C A]}
                                     MarriedTo #{[A B] [B A]}))
 
-(def family-4-model (interpretation FamilyDL
+(def family-4-model (interpretation '[Mother Female Father Male]
+                                    '[MarriedTo HasChild]
                                     [A B C D E]
                                     Female #{A}
                                     Male   #{C E}
@@ -174,13 +190,15 @@
 
 ;;; Lisp Example
 
-(define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational, Reflective, StackOriented, Concatenative,
-                   Imperative, Lazy, Modular, Meta, Generic, Scripting, Prototyping]
+(define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational,
+                   Reflective, StackOriented, Concatenative, Imperative, Lazy,
+                   Modular, Meta, Generic, Scripting, Prototyping]
                   [Influenced HasDialect]
                   []
                   :extends EL-gfp)
 
-(def lisp-model (interpretation LispDL
+(def lisp-model (interpretation (concept-names LispDL)
+                                (role-names LispDL)
                                 [IPL Lisp ML Haskell Scheme Common-Lisp Dylan Lua
                                  Ruby Python Perl Smalltalk Logo Tcl Forth]
                                 Assembly        #{IPL}
@@ -219,7 +237,8 @@
                                                   [Perl Python] [Perl Ruby]
                                                   [Python Ruby]}))
 
-(def lisp-model* (interpretation LispDL
+(def lisp-model* (interpretation (concept-names LispDL)
+                                 (role-names LispDL)
                                  [IPL Lisp ML Haskell Scheme Common-Lisp Dylan Lua
                                   Ruby Python Perl Smalltalk Logo Tcl Forth]
                                  Assembly        #{IPL}

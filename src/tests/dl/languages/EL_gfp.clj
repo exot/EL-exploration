@@ -19,53 +19,56 @@
 ;;;
 
 (deftest test-lcs
-  (are [model tbox targets] (let [lcs     (EL-gfp-lcs (interpretation-language model) tbox 'targets),
-                                  lcs-int (interpret model lcs)]
-                              (forall [target 'targets]
-                                (subset? (interpret model [tbox target])
-                                         lcs-int)))
-       some-model some-tbox [Grandfather]
-       some-model some-tbox [Grandmother]
-       some-model some-tbox [Grandmother Grandfather]
-       paper-model some-tbox [Grandfather Grandmother]
-       small-model some-tbox [Grandfather Grandmother]
-       family-model parent [Partner Self]
-       family-model parent [Partner Self Child]
-       family-model parent [Self Self Self Self])
-  (are [model tbox target] (= (interpret model (EL-gfp-lcs (interpretation-language model) tbox '[target]))
-                              (interpret model [tbox 'target]))
-       some-model some-tbox Grandfather
-       some-model some-tbox Grandmother
-       some-model all-tbox All
-       family-model parent Self))
+  (are [language model tbox targets] (let [lcs     (EL-gfp-lcs tbox 'targets),
+                                           lcs-int (interpret model lcs)]
+                                       (forall [target 'targets]
+                                         (subset? (interpret model
+                                                             (make-dl-expression-nc language
+                                                                                    [tbox target]))
+                                                  lcs-int)))
+       SimpleDL some-model some-tbox [Grandfather]
+       SimpleDL some-model some-tbox [Grandmother]
+       SimpleDL some-model some-tbox [Grandmother Grandfather]
+       SimpleDL paper-model some-tbox [Grandfather Grandmother]
+       SimpleDL small-model some-tbox [Grandfather Grandmother]
+       FamilyDL family-model parent [Partner Self]
+       FamilyDL family-model parent [Partner Self Child]
+       FamilyDL family-model parent [Self Self Self Self])
+  (are [language model tbox target] (= (interpret model (EL-gfp-lcs tbox '[target]))
+                                       (interpret model (make-dl-expression-nc language [tbox 'target])))
+       SimpleDL some-model some-tbox Grandfather
+       SimpleDL some-model some-tbox Grandmother
+       SimpleDL some-model all-tbox All
+       FamilyDL family-model parent Self))
 
 (deftest test-msc
-  (are [testing-model objects] (subset? 'objects
-                                        (interpret testing-model (EL-gfp-msc testing-model 'objects)))
-       some-model #{}
-       some-model #{John}
-       some-model #{John Marry}
-       some-model #{John Marry Jana}
-       some-model #{John Peter}
-       some-model #{Jana Marry}
-       family-model #{}
-       family-model #{Paul Linda Mackenzie}
-       family-model #{Linda}
-       family-model #{Michelle}
-       family-model #{Paul Linda James John Michelle Mackenzie}
-       riding-model #{}
-       riding-model #{RechtesVorderrad LinkesHinterrad}
-       riding-model #{MeinFahrrad})
-  (are [testing-model objects mmsc]
-    (= (make-dl-expression (interpretation-language testing-model) 'mmsc)
-       (most-specific-concept testing-model 'objects))
+  (are [language testing-model objects] (subset? 'objects
+                                                 (interpret testing-model
+                                                            (EL-gfp-mmsc language testing-model 'objects)))
+       SimpleDL some-model #{}
+       SimpleDL some-model #{John}
+       SimpleDL some-model #{John Marry}
+       SimpleDL some-model #{John Marry Jana}
+       SimpleDL some-model #{John Peter}
+       SimpleDL some-model #{Jana Marry}
+       FamilyDL family-model #{}
+       FamilyDL family-model #{Paul Linda Mackenzie}
+       FamilyDL family-model #{Linda}
+       FamilyDL family-model #{Michelle}
+       FamilyDL family-model #{Paul Linda James John Michelle Mackenzie}
+       RidingDL riding-model #{}
+       RidingDL riding-model #{RechtesVorderrad LinkesHinterrad}
+       RidingDL riding-model #{MeinFahrrad})
+  (are [language testing-model objects mmsc]
+    (= (make-dl-expression language 'mmsc)
+       (EL-gfp-mmsc language testing-model 'objects))
     ;;
-    some-model #{} (bottom)
-    paper-model #{} (bottom)
-    paper-model #{James} (and Male)
-    paper-model #{John} (and Father Male (exists HasChild (and Female)))
-    family-model #{} (bottom)
-    riding-model #{} (bottom)))
+    SimpleDL some-model #{} (bottom)
+    SimpleDL paper-model #{} (bottom)
+    SimpleDL paper-model #{James} Male
+    SimpleDL paper-model #{John} (and Father Male (exists HasChild Female))
+    FamilyDL family-model #{} (bottom)
+    RidingDL riding-model #{} (bottom)))
 
 ;;;
 

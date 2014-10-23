@@ -281,13 +281,21 @@
   (let [tbox          (normalize-gfp tbox),
         vertices      (defined-concepts tbox),
         neighbours    (memo-fn _ [target]
-                        (set-of (vec (map expression-term (arguments t)))
-                                [t (arguments (definition-expression (find-definition tbox target)))
-                                 :when (compound? t)])),
+                        (let [definition (definition-expression (find-definition tbox target)),
+                              args       (if (and (compound? definition)
+                                                  (= 'and (operator definition)))
+                                           (arguments definition)
+                                           (list definition))]
+                          (set-of (vec (map expression-term (arguments t)))
+                                  [t args :when (compound? t)])))
         vertex-labels (memo-fn _ [target]
-                        (set-of (expression-term t)
-                                [t (arguments (definition-expression (find-definition tbox target)))
-                                 :when (atomic? t)]))]
+                        (let [definition (definition-expression (find-definition tbox target)),
+                              args       (if (and (compound? definition)
+                                                  (= 'and (operator definition)))
+                                           (arguments definition)
+                                           (list definition))]
+                          (set-of (expression-term t)
+                                  [t args :when (atomic? t)])))]
     (make-description-graph vertices neighbours vertex-labels)))
 
 (defn description-graph->tbox
@@ -309,22 +317,24 @@
 (defn interpretation->description-graph
   "Converts given interpretation to a description graph."
   [interpretation]
-  (let [language      (interpretation-language interpretation),
+  (let [concept-names (interpretation-concept-names interpretation),
+        role-names    (interpretation-role-names interpretation),
         int-func      (interpretation-function interpretation),
         vertices      (interpretation-base-set interpretation),
 
         neighbours    (memo-fn _ [x]
-                        (set-of [r y] [r (role-names language),
+                        (set-of [r y] [r role-names,
                                        [_ y] (filter #(= (first %) x) (int-func r))])),
         vertex-labels (memo-fn _ [x]
-                        (set-of P [P (concept-names language),
+                        (set-of P [P concept-names,
                                    :when (contains? (int-func P) x)]))]
     (make-description-graph vertices neighbours vertex-labels)))
 
 (defn interpretation->tbox
   "Converts a given interpretation to its corresponding tbox."
-  [interpretation]
-  (let [tbox (description-graph->tbox (interpretation->description-graph interpretation))
+  [interpretation language]
+  (let [tbox (description-graph->tbox (interpretation->description-graph interpretation)
+                                      language)
         tbox (if (not-empty (tbox-definitions tbox))
                (first (tidy-up-ttp [tbox (first (defined-concepts tbox))]))
                tbox)]
@@ -348,7 +358,7 @@
         subtrees     (map (fn [existential]
                             [(nth (expression-term existential) 1),
                              (EL-concept-description->description-tree
-                              (make-dl-expression language
+                              (make-dl-expression (expression-language concept-description)
                                                   (nth (expression-term existential) 2)))])
                           existentials)]
     [(make-description-graph (apply union
@@ -376,7 +386,7 @@
 
   Note: This function does not check whether the given description graph is acylic.  If
   its not, and the cycle is reachable from root, then this function will not terminate. "
-  [description-graph root]
+  [language description-graph root]
   (assert (description-graph? description-graph)
           "Argument `description-graph' must be a description graph.")
   (assert (contains? (set (vertices description-graph)) root)
@@ -389,12 +399,14 @@
                                                     r
                                                     (expression-term
                                                      (description-tree->EL-concept-description
-                                                      description-graph v))))
-                                            role-successors))]
-    (make-dl-expression (graph-language description-graph)
-                        (if (= 1 (count arguments))
-                          (first arguments)
-                          (cons 'and arguments)))))
+                                                      language
+                                                      description-graph
+                                                      v))))
+                                            role-successors)),
+        term                   (if (= 1 (count arguments))
+                                 (first arguments)
+                                 (cons 'and arguments))]
+    (make-dl-expression language term)))
 
 (defn prune-description-graph
   "Given a description graph `graph', a node `target' in this graph and an integer `k',
@@ -594,7 +606,7 @@
 (defn graph-role-names
   "Returns the role-names used in the graph."
   [^Description-Graph description-graph]
-  (let [neighs     (neighbours description-graph)]
+  (let [neighs (neighbours description-graph)]
     (set-of r | v (vertices description-graph)
                 [r _] (neighs v))))
 

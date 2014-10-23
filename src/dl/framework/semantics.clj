@@ -14,10 +14,10 @@
 
 ;;; interpretation definition
 
-(defrecord Interpretation [language base-set function]
+(defrecord Interpretation [concept-names role-names base-set function]
   Object
   (toString [this]
-    (str (list 'Interpretation (print-str language) base-set function))))
+    (str (list 'Interpretation concept-names role-names base-set function))))
 
 (defmethod print-method Interpretation [interpretation, ^java.io.Writer w]
   (.write w (str interpretation)))
@@ -27,10 +27,15 @@
   [^Interpretation interpretation]
   (.base-set interpretation))
 
-(defn interpretation-language
-  "Returns language of the given interpretation."
+(defn interpretation-concept-names
+  "Returns the concept-names of the given interpretation."
   [^Interpretation interpretation]
-  (.language interpretation))
+  (.concept-names interpretation))
+
+(defn interpretation-role-names
+  "Returns the role-names of the given interpretation."
+  [^Interpretation interpretation]
+  (.role-names interpretation))
 
 (defn interpretation-function
   "Returns the interpretation function of given interpretation."
@@ -38,16 +43,19 @@
   (.function interpretation))
 
 (defn make-interpretation
-  "Returns an interpretation for a given DL language on the given base set."
-  [language base-set interpretation-function]
+  "Returns an interpretation for given concept and role-names on the given base set."
+  [concept-names role-names base-set interpretation-function]
   (assert (set? base-set))
-  (assert (empty? (intersection base-set (concept-names language)))
-          (str "There are elements which are also concept names: "
-               (intersection base-set (concept-names language))))
-  (assert (empty? (intersection base-set (role-names language)))
-          (str "There are elements which are also role names:"
-               (intersection base-set (role-names language))))
-  (Interpretation. language base-set interpretation-function))
+  (let [concept-names (set concept-names),
+        role-names    (set role-names)]
+    (assert (empty? (intersection base-set concept-names))
+            (str "There are elements which are also concept names: "
+                 (intersection base-set concept-names)))
+    (assert (empty? (intersection base-set role-names))
+            (str "There are elements which are also role names:"
+                 (intersection base-set role-names)))
+    (Interpretation. concept-names role-names base-set interpretation-function)))
+
 
 ;;; Interpretations
 
@@ -66,11 +74,9 @@
   "Interprets given expression in given interpretation and returns the
   corresponding extent."
   [interpretation dl-expression]
-  ((compile-expression (if (dl-expression? dl-expression)
-                        dl-expression
-                        (make-dl-expression (interpretation-language interpretation)
-                                            dl-expression)))
-   interpretation))
+  (assert (dl-expression? dl-expression)
+          "Argument `dl-expression' must be a concept description.")
+  ((compile-expression dl-expression) interpretation))
 
 (defmethod compile-expression ::base-case [dl-expression]
   (fn [interpretation]
@@ -159,26 +165,26 @@
 ;;; interpretation syntax
 
 (defmacro interpretation
-  "Defines an interpretation for language on base-set: interpretations
+  "Defines an interpretation for given concept and role-names on base-set: interpretations
   maps atomic expressions to their extents."
-  [language base-set & interpretations]
+  [concept-names role-names base-set & interpretations]
   `(let [interpretation-map# '~(apply hash-map interpretations),
          defined-symbols#    (keys interpretation-map#),
-         undefined-symbols#  (difference (union (concept-names ~language)
-                                                (role-names ~language))
+         undefined-symbols#  (difference (union (set ~concept-names)
+                                                (set ~role-names))
                                          (set defined-symbols#))]
      (when (not (empty? undefined-symbols#))
        (illegal-argument "Definition of model is incomplete. The symbols "
                          undefined-symbols# " are missing."))
-     (make-interpretation ~language (set '~base-set) interpretation-map#)))
+     (make-interpretation ~concept-names ~role-names (set '~base-set) interpretation-map#)))
 
 (add-dl-syntax! 'interpretation)
 
 (defmacro define-interpretation
-  "Globally defines an interpretation with name for language on
+  "Globally defines an interpretation with name for given concept and role-names on
   base-set: interpretations maps atomic expressions to their extents."
-  [name language base-set & interpretations]
-  `(def ~name (interpretation ~language ~base-set ~@interpretations)))
+  [name concept-names role-names base-set & interpretations]
+  `(def ~name (interpretation ~concept-names ~role-names ~base-set ~@interpretations)))
 
 ;;;
 
@@ -187,7 +193,8 @@
   should return nil if it doesn't change a value of model's original
   interpretion, where then the original interpretation is used."
   [interpretation i]
-  (make-interpretation (interpretation-language interpretation)
+  (make-interpretation (interpretation-concept-names interpretation)
+                       (interpretation-role-names interpretation)
                        (interpretation-base-set interpretation)
                        (fn [A]
                          (or (i A)
@@ -202,23 +209,16 @@
 (defn hash-map->interpretation
   "Given concepts as a hash-map from symbols to sets and roles as a
   hash-map from symbols to sets of pairs returns a model containing
-  the hash-maps as interpretation. If parameter :base-lang is given
-  the description logic used in this model will be an extension of the
-  parameter value."
+  the hash-maps as interpretation."
   [concepts roles & {:keys [base-lang]}]
   (let [concept-names (keys concepts),
         role-names    (keys roles),
-        language      (make-dl (gensym)
-                               concept-names
-                               role-names
-                               []
-                               :extends base-lang),
         base-set      (union (set-of x [[conc extension] concepts,
                                         x extension])
                              (set-of x [[role extension] roles,
                                         pair extension,
                                         x pair]))]
-    (make-interpretation language base-set (merge concepts roles))))
+    (make-interpretation concept-names role-names base-set (merge concepts roles))))
 
 
 ;;; TBox interpretations

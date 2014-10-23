@@ -103,27 +103,26 @@
   (let [relation (reduce union
                          #{}
                          (map #(interpret interpretation %)
-                              (role-names (interpretation-language interpretation)))),
+                              (interpretation-role-names interpretation))),
         base-set (collect (set individuals) relation),
 
         name-int (map-by-fn #(intersection base-set (interpret interpretation %))
-                            (concept-names (interpretation-language interpretation))),
+                            (interpretation-concept-names interpretation)),
         role-int (map-by-fn #(set-of [x y] | [x y] (interpret interpretation %)
                                              :when (and (contains? base-set x)
                                                         (contains? base-set y)))
-                            (role-names (interpretation-language interpretation))),
+                            (interpretation-role-names interpretation)),
         interpr  (let [interpretation (merge name-int role-int)]
                    (select-keys interpretation
                                 (remove #(empty? (interpretation %))
                                         (keys interpretation)))),
 
-        concs    (intersection (concept-names (interpretation-language interpretation))
+        concs    (intersection (interpretation-concept-names interpretation)
                                (set (keys interpr)))
-        roles    (intersection (role-names (interpretation-language interpretation))
+        roles    (intersection (interpretation-role-names interpretation)
                                (set (keys interpr)))]
-    (make-interpretation (restrict-language (interpretation-language interpretation)
-                                            concs
-                                            roles)
+    (make-interpretation concs
+                         roles
                          base-set
                          interpr)))
 
@@ -158,7 +157,7 @@
   (let [c (count (interpret interpretation (subsumee gci)))]
     (if (zero? c)
       1
-      (/ (count (interpret interpretation (dl-expression (interpretation-language interpretation)
+      (/ (count (interpret interpretation (dl-expression (expression-language (subsumee gci))
                                                          (and (subsumee gci) (subsumer gci)))))
          c))))
 

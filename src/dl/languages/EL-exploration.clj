@@ -58,9 +58,8 @@
 
 (defn model-gcis-naive
   "Naive implementation of model-gcis with role-depth bound."
-  [d model]
-  (let [language (interpretation-language model),
-        M_i      (essential-concept-descriptions d model),
+  [language d model]
+  (let [M_i      (essential-concept-descriptions language d model),
         K        (induced-context M_i model),
         S        (canonical-base-from-base
                   (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
