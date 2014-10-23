@@ -19,7 +19,8 @@ interpretation.  If the data itself is not very large, you can do it directly:
 (define-dl SimpleDL [Father Mother Male Female] [HasChild] []
   :extends EL-gfp)
 
-(def some-model (interpretation SimpleDL
+(def some-model (interpretation '[Father Mother Male Female]
+                                '[HasChild]
                                 #{John Marry Peter Jana}
                                 Mother #{Marry},
                                 Father #{John, Peter},
