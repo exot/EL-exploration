@@ -21,8 +21,8 @@
     (illegal-argument "Arguments to subsumption must be dl-expressions."))
   (let [C-language (expression-language C),
         D-language (expression-language D)]
-    (when (not= C-language D-language)
-      (illegal-argument "For subsumption the expression must be formulated in the same language."))
+    (when (not= (base-language C-language) (base-language D-language))
+      (illegal-argument "For subsumption the expression must be formulated in the same base language."))
     (language-name C-language)))
 
 (defmulti compute-subsumption

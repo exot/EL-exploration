@@ -21,6 +21,11 @@
 (defmethod print-method DL [dl, ^java.io.Writer w]
   (.write w (str dl)))
 
+(defn dl?
+  "Tests whether `something' is a description logic or not."
+  [something]
+  (instance? DL something))
+
 (defn language-name
   "Returns the name of the given language."
   [^DL language]
@@ -236,6 +241,24 @@
       (derive (language-name language) (language-name base-lang)))
 
     language))
+
+(defn base-language
+  "Returns the name of the base language of the give description logics, i.e. the logic
+  that does not have any further ancestors."
+  [language]
+  (assert (dl? language)
+          "Argument `language' must be a description logic")
+  (loop [name (language-name language)]
+    (let [ancs (ancestors name)]
+      (cond
+       (empty? ancs)
+       name
+       ;;
+       (singleton? ancs)
+       (recur (first ancs))
+       ;;
+       true
+       (illegal-state (format "Language `%s' has more then one base language" name))))))
 
 (defmacro define-dl
   "Defines a DL."
