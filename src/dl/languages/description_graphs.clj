@@ -333,6 +333,42 @@
                tbox)]
     tbox))
 
+(defn EL-concept-description->description-tree
+  "WRITEME"
+  [concept-description]
+  (let [language     (expression-language concept-description),
+        root         (gensym),
+        args         (if-not (atomic? concept-description)
+                       (arguments concept-description)
+                       (list concept-description)),
+        names        (filter atomic? args),
+        existentials (remove atomic? args),
+        subtrees     (map (fn [existential]
+                            [(nth (expression-term existential) 1),
+                             (EL-concept-description->description-tree
+                              (make-dl-expression language
+                                                  (nth (expression-term existential) 2)))])
+                          existentials)]
+    [(make-description-graph language
+                             (apply union
+                                    #{root}
+                                    (map (fn [[r [tree v]]]
+                                           (vertices tree))
+                                         subtrees))
+                             (apply merge
+                                    {root (vec (map (fn [[r [tree v]]]
+                                                      [r v])
+                                                    subtrees))}
+                                    (map (fn [[r [tree v]]]
+                                           (neighbours tree))
+                                         subtrees))
+                             (apply merge
+                                    {root names}
+                                    (map (fn [[r [tree v]]]
+                                           (vertex-labels tree))
+                                         subtrees))),
+     root]))
+
 (defn description-tree->EL-concept-description
   "WRITEME"
   [description-graph root]
