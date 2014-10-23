@@ -333,6 +333,24 @@
                tbox)]
     tbox))
 
+(defn description-tree->EL-concept-description
+  "WRITEME"
+  [description-graph root]
+  (let [labels                 ((vertex-labels description-graph) root),
+        role-successors        ((neighbours description-graph) root),
+        arguments              (concat labels
+                                       (map (fn [[r v]]
+                                              (list 'exists
+                                                    r
+                                                    (expression-term
+                                                     (description-tree->EL-concept-description
+                                                      description-graph v))))
+                                            role-successors))]
+    (make-dl-expression (graph-language description-graph)
+                        (if (= 1 (count arguments))
+                          (first arguments)
+                          (cons 'and arguments)))))
+
 (defn prune-description-graph
   "Given a description graph `graph', a node `target' in this graph and an integer `k',
   returns the unraveling of the graph starting at target of depth at most k.  The result
