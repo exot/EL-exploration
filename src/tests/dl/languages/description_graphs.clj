@@ -81,11 +81,7 @@
     parent))
 
 (deftest test-EL-concept-description<->description-tree
-  (let [sample-dl-graph (make-description-graph (make-dl 'SimpleDL
-                                                         '[A B C]
-                                                         '[R S T]
-                                                         '[and exists])
-                                                '#{a b c}
+  (let [sample-dl-graph (make-description-graph '#{a b c}
                                                 '{a [[R b], [S c]]}
                                                 '{a [A B],
                                                   b [A C],

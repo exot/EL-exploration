@@ -18,7 +18,7 @@
 
 ;;;
 
-(defrecord Description-Graph [language vertices neighbours vertex-labels]
+(defrecord Description-Graph [vertices neighbours vertex-labels]
   Object
   (toString [this]
     (str (list 'Description-Graph
@@ -46,16 +46,10 @@
   [^Description-Graph description-graph]
   (.vertex-labels description-graph))
 
-(defn graph-language
-  "Returns the underlying description language of the given
-  description graph."
-  [^Description-Graph description-graph]
-  (.language description-graph))
-
 (defn make-description-graph
   "Creates and returns a description graph for the given arguments."
-  [language vertices neighbours vertex-labels]
-  (Description-Graph. language vertices neighbours vertex-labels))
+  [vertices neighbours vertex-labels]
+  (Description-Graph. vertices neighbours vertex-labels))
 
 ;;; Normalizing
 
@@ -285,7 +279,6 @@
   "Converts a tbox to a description graph. Normalization is done with gfp semantics."
   [tbox]
   (let [tbox          (normalize-gfp tbox),
-        language      (tbox-language tbox),
         vertices      (defined-concepts tbox),
         neighbours    (memo-fn _ [target]
                         (set-of (vec (map expression-term (arguments t)))
@@ -295,13 +288,12 @@
                         (set-of (expression-term t)
                                 [t (arguments (definition-expression (find-definition tbox target)))
                                  :when (atomic? t)]))]
-    (make-description-graph language vertices neighbours vertex-labels)))
+    (make-description-graph vertices neighbours vertex-labels)))
 
 (defn description-graph->tbox
   "Converts a description graph to a tbox."
-  [description-graph]
-  (let [language    (graph-language description-graph),
-        labels      (vertex-labels description-graph),
+  [description-graph language]
+  (let [labels      (vertex-labels description-graph),
         neighbours  (neighbours description-graph),
 
         definitions (map-by-fn (fn [A]
@@ -327,7 +319,7 @@
         vertex-labels (memo-fn _ [x]
                         (set-of P [P (concept-names language),
                                    :when (contains? (int-func P) x)]))]
-    (make-description-graph language vertices neighbours vertex-labels)))
+    (make-description-graph vertices neighbours vertex-labels)))
 
 (defn interpretation->tbox
   "Converts a given interpretation to its corresponding tbox."
@@ -347,8 +339,7 @@
   (assert (subset? (set (constructors (expression-language concept-description)))
                    '#{and exists bottom})
           "Argument `concept-description' must be a EL concept description.")
-  (let [language     (expression-language concept-description),
-        root         (gensym),
+  (let [root         (gensym),
         args         (if-not (atomic? concept-description)
                        (arguments concept-description)
                        (list concept-description)),
@@ -360,8 +351,7 @@
                               (make-dl-expression language
                                                   (nth (expression-term existential) 2)))])
                           existentials)]
-    [(make-description-graph language
-                             (apply union
+    [(make-description-graph (apply union
                                     #{root}
                                     (map (fn [[r [tree v]]]
                                            (vertices tree))
@@ -430,13 +420,11 @@
             labels    (fn [x]
                         ((vertex-labels graph) (@renamed x)))]
         (if target
-          [(make-description-graph (graph-language graph)
-                                   vertices
+          [(make-description-graph vertices
                                    @neighs
                                    labels),
            target]
-          [(make-description-graph (graph-language graph)
-                                   '[A]
+          [(make-description-graph '[A]
                                    {}
                                    {}),
            'A])))))
@@ -447,8 +435,7 @@
   "Returns the product of the two description graphs given. Returns the directed connected component
   of the graph product containing node, if given."
   ([graph-1 graph-2]
-     (let [language      (graph-language graph-1),
-           vertices      (cross-product (vertices graph-1)
+     (let [vertices      (cross-product (vertices graph-1)
                                         (vertices graph-2)),
            neighbours    (fn [[A B]]
                            (set-of [r [C D]] [[r C] ((neighbours graph-1) A),
@@ -457,10 +444,9 @@
            vertex-labels (fn [[A B]]
                            (intersection ((vertex-labels graph-1) A)
                                          ((vertex-labels graph-2) B)))]
-       (make-description-graph language vertices neighbours vertex-labels)))
+       (make-description-graph vertices neighbours vertex-labels)))
   ([graph-1 graph-2 node]
-     (let [language      (graph-language graph-1),
-           vertices      (loop [verts #{node},
+     (let [vertices      (loop [verts #{node},
                                 newvs #{node}]
                            (if (empty? newvs)
                              verts
@@ -478,7 +464,7 @@
            vertex-labels (fn [[A B]]
                            (intersection ((vertex-labels graph-1) A)
                                          ((vertex-labels graph-2) B)))]
-       (make-description-graph language vertices neighbours vertex-labels))))
+       (make-description-graph vertices neighbours vertex-labels))))
 
 (defn description-graph-component
   "Returns the directed connected component of desgraph containing node."
@@ -490,8 +476,7 @@
                          (let [nextvs (set-of v | w newvs [_ v] ((neighbours desgraph) w))]
                            (recur (into verts nextvs)
                                   (difference nextvs verts)))))]
-    (make-description-graph (graph-language desgraph)
-                            new-vertices
+    (make-description-graph new-vertices
                             (neighbours desgraph)
                             (vertex-labels desgraph))))
 
@@ -571,7 +556,7 @@
 (defn efficient-initialize
   "Returns tripel [sim, remove, pre*] as needed by
   efficient-simulator-sets. sim, remove and pre* are Java HashMaps."
-  [language G-1 G-2]
+  [edge-labels G-1 G-2]
   (let [^HashMap sim    (HashMap.),
         ^HashMap remove (HashMap.),
         ^HashMap pre*   (HashMap.),
@@ -584,7 +569,7 @@
         post-2     (:post G-2),
         pre-2      (:pre G-2),
 
-        R (role-names language)]
+        R edge-labels]
 
     (doseq [v base-set-1]
       (.put sim v
@@ -606,17 +591,23 @@
 
     [sim remove pre*]))
 
+(defn graph-role-names
+  "Returns the role-names used in the graph."
+  [^Description-Graph description-graph]
+  (let [neighs     (neighbours description-graph)]
+    (set-of r | v (vertices description-graph)
+                [r _] (neighs v))))
+
 (defn efficient-simulator-sets
   "Implements EL-gfp-EfficientSimilaritiy (for the maximal simulation
   between two graphs) and returns the corresponding simulator sets."
   [G-1 G-2]
-  (let [L (graph-language G-1),
-        R (role-names L),
+  (let [R (graph-role-names G-1),
 
         G-1 (single-edge->double-edge-graph G-1),
         G-2 (single-edge->double-edge-graph G-2),
 
-        vars            (efficient-initialize L G-1 G-2),
+        vars            (efficient-initialize R G-1 G-2),
         ^HashMap sim    (nth vars 0),
         ^HashMap remove (nth vars 1),
         ^HashMap pre*   (nth vars 2),
