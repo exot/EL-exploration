@@ -345,7 +345,7 @@
   (assert (dl-expression? concept-description)
           "Argument `concept-description' must be a concept description")
   (assert (subset? (set (constructors (expression-language concept-description)))
-                   '#{and exists})
+                   '#{and exists bottom})
           "Argument `concept-description' must be a EL concept description.")
   (let [language     (expression-language concept-description),
         root         (gensym),
@@ -374,7 +374,7 @@
                                            (neighbours tree))
                                          subtrees))
                              (apply merge
-                                    {root names}
+                                    {root (set names)}
                                     (map (fn [[r [tree v]]]
                                            (vertex-labels tree))
                                          subtrees))),
@@ -389,7 +389,7 @@
   [description-graph root]
   (assert (description-graph? description-graph)
           "Argument `description-graph' must be a description graph.")
-  (assert (contains? (vertices description-graph) root)
+  (assert (contains? (set (vertices description-graph)) root)
           "Argument `root' is not a vertex of the given description graph.")
   (let [labels                 ((vertex-labels description-graph) root),
         role-successors        ((neighbours description-graph) root),
