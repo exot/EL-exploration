@@ -340,6 +340,27 @@
                tbox)]
     tbox))
 
+(defn- flatten-conjunction
+  "Removes nested occurences of `and' on the toplevel of the given `concept-description'.
+  If the concept-description is not a conjunction at all, it is turned into a conjunction
+  with one element."
+  [concept-description]
+  (let [args (map expression-term
+                  (if (and (compound? concept-description)
+                           (= 'and (operator concept-description)))
+                    (arguments concept-description)
+                    (list concept-description)))]
+    (loop [arg-list  args
+           collected []]
+      (if (empty? arg-list)
+        collected
+        (let [next (first arg-list)]
+          (if (and (list? next) (= 'and (first next)))
+            (recur (concat (rest next) (rest arg-list))
+                   collected)
+            (recur (rest arg-list)
+                   (conj collected next))))))))
+
 (defn EL-concept-description->description-tree
   "Given an EL concept description `concept-description', returns a vector [G v], where
   `G' is the description tree of `concept-description', and `v' is the root of `G'."
@@ -350,16 +371,14 @@
                    '#{and exists bottom})
           "Argument `concept-description' must be a EL concept description.")
   (let [root         (gensym),
-        args         (if-not (atomic? concept-description)
-                       (arguments concept-description)
-                       (list concept-description)),
-        names        (filter atomic? args),
-        existentials (remove atomic? args),
+        args         (flatten-conjunction concept-description),
+        names        (remove list? args),
+        existentials (filter list? args),
         subtrees     (map (fn [existential]
-                            [(nth (expression-term existential) 1),
+                            [(nth existential 1),
                              (EL-concept-description->description-tree
                               (make-dl-expression (expression-language concept-description)
-                                                  (nth (expression-term existential) 2)))])
+                                                  (nth existential 2)))])
                           existentials)]
     [(make-description-graph (apply union
                                     #{root}

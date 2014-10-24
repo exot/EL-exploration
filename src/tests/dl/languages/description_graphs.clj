@@ -107,7 +107,18 @@
                     simple-dl
                     (EL-concept-description->description-tree
                      (description-tree->EL-concept-description simple-dl sample-dl-graph x)))
-             (description-tree->EL-concept-description simple-dl sample-dl-graph x))))))
+             (description-tree->EL-concept-description simple-dl sample-dl-graph x))))
+    (is (= (make-dl-expression tests.dl.examples/SimpleDL '(and))
+           (apply description-tree->EL-concept-description
+                  x/SimpleDL
+                  (EL-concept-description->description-tree
+                   (make-dl-expression x/SimpleDL '(and (and)))))))
+    (is (= '#{A B}
+           (set-of (expression-term n) |
+                   n (arguments (apply description-tree->EL-concept-description
+                                       x/SimpleDL
+                                       (EL-concept-description->description-tree
+                                        (make-dl-expression x/SimpleDL '(and (and A B)))))))))))
 
 ;;;
 
