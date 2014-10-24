@@ -5,3 +5,4 @@ target/
 hs_err*
 /.nrepl-port
 pom.xml
+/tests/data/

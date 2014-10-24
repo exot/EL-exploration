@@ -16,8 +16,6 @@
         dl.framework.syntax
         dl.framework.boxes
         dl.framework.semantics
-        dl.languages.EL-gfp
-        dl.languages.EL-gfp-exploration
         dl.languages.interaction))
 
 ;;;
@@ -236,7 +234,7 @@
   containing the interpretations of roles in the data-set of dbpedia."
   [properties instances roles]
   (let [[concepts, roles] (read-dbpedia-triples properties instances roles)]
-    (hash-map->interpretation concepts roles :base-lang EL-gfp)))
+    (hash-map->interpretation concepts roles)))
 
 
 ;;; Drug Model
@@ -287,8 +285,7 @@
         roles    (prepare-for-conexp roles),
         concepts (prepare-for-conexp concepts)]
     (hash-map->interpretation concepts
-                              roles
-                              :base-lang EL-gfp)))
+                              roles)))
 
 ;;; Programming Language Model
 
@@ -328,8 +325,7 @@
                                                              (contains? individuals y)))]
 
     (hash-map->interpretation (prepare-for-conexp concepts)
-                              (prepare-for-conexp {"influenced" influence})
-                              :base-lang EL-gfp)))
+                              (prepare-for-conexp {"influenced" influence}))))
 
 ;;;
 

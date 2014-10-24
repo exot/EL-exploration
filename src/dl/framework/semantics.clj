@@ -210,7 +210,7 @@
   "Given concepts as a hash-map from symbols to sets and roles as a
   hash-map from symbols to sets of pairs returns a model containing
   the hash-maps as interpretation."
-  [concepts roles & {:keys [base-lang]}]
+  [concepts roles]
   (let [concept-names (keys concepts),
         role-names    (keys roles),
         base-set      (union (set-of x [[conc extension] concepts,
