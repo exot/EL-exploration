@@ -13,6 +13,7 @@
 
 (tests-to-run tests.dl.framework.semantics
               tests.dl.languages.description-graphs
+              tests.dl.languages.EL
               tests.dl.languages.EL-gfp
               tests.dl.framework.reasoning
               tests.dl.languages.EL-gfp-rewriting
