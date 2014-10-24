@@ -17,6 +17,7 @@
               tests.dl.languages.EL-gfp
               tests.dl.framework.reasoning
               tests.dl.languages.EL-gfp-rewriting
+              tests.dl.languages.EL-exploration
               tests.dl.languages.EL-gfp-exploration)
 
 ;;;

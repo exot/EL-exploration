@@ -13,7 +13,8 @@
         dl.framework.semantics
         dl.framework.reasoning
         dl.languages.description-graphs
-        dl.languages.EL))
+        dl.languages.EL
+        dl.languages.EL-gfp-rewriting))
 
 ;;; technical helpers
 
@@ -171,10 +172,8 @@
               (for [all-P pseudo-descriptions,
                     :let [all-P-closure (model-closure all-P)]
                     :when (not (subsumed-by? all-P all-P-closure))]
-                (make-subsumption all-P all-P-closure)
-                ;; (abbreviate-subsumption (make-subsumption all-P all-P-closure)
-                ;;                         implicational-knowledge)
-                ))))))))
+                (abbreviate-subsumption (make-subsumption all-P all-P-closure)
+                                        implicational-knowledge)))))))))
 
 ;;;
 
