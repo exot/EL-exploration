@@ -12,7 +12,7 @@
         dl.framework.boxes
         dl.framework.semantics
         dl.languages.description-graphs
-        tests.dl.examples)
+        [tests.dl.examples :as x])
   (:use clojure.test))
 
 ;;;
