@@ -19,9 +19,6 @@
   (toString [this]
     (str (list 'Interpretation concept-names role-names base-set function))))
 
-(defmethod print-method Interpretation [interpretation, ^java.io.Writer w]
-  (.write w (str interpretation)))
-
 (defn interpretation-base-set
   "Returns base set of a given interpretation."
   [^Interpretation interpretation]
@@ -56,6 +53,15 @@
                  (intersection base-set role-names)))
     (Interpretation. concept-names role-names base-set interpretation-function)))
 
+(defmethod print-dup Interpretation [interpretation, ^java.io.Writer w]
+  (.write w (format "(make-interpretation '%s '%s '%s '%s)"
+                    (interpretation-concept-names interpretation)
+                    (interpretation-role-names interpretation)
+                    (interpretation-base-set interpretation)
+                    (interpretation-function interpretation))))
+
+(defmethod print-method Interpretation [interpretation, ^java.io.Writer w]
+  (.write w (str interpretation)))
 
 ;;; Interpretations
 
