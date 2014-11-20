@@ -20,9 +20,6 @@
          (print-str (clojure.string/join (interpose ", " (vals definition-map))))
          ")")))
 
-(defmethod print-method TBox [tbox, ^java.io.Writer w]
-  (.write w (str tbox)))
-
 (defn tbox?
   "Returns true iff thing is a TBox."
   [thing]
@@ -43,6 +40,14 @@
   definition-map, which must be a mapping from symbols to definitions."
   [language definition-map]
   (TBox. language definition-map))
+
+(defmethod print-method TBox [tbox, ^java.io.Writer w]
+  (.write w (str tbox)))
+
+(defmethod print-dup TBox [tbox, ^java.io.Writer w]
+  (.write w (format "(make-tbox (find-dl %s) '%s)"
+                    (language-name (tbox-language tbox))
+                    (tbox-definition-map tbox))))
 
 ;;; accessing used role names, primitive and defined concepts
 
@@ -190,7 +195,7 @@
                                                         (definition-target definition)))))
                               {}
                               (tbox-definitions tbox)),
-        
+
         ;; for each expression, use the first symbol that defined it as new defining symbol
         rename-map   (reduce! (fn [map definition]
                                 (assoc! map
@@ -203,7 +208,7 @@
                                             first)))
                               {}
                               (vals (tbox-definition-map tbox))),
-        
+
         new-tbox (make-tbox (tbox-language tbox)
                             (reduce! (fn [map definition]
                                        (assoc! map
