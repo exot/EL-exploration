@@ -113,11 +113,6 @@
   [language dl-sexp]
   (make-dl-expression-nc language (dl-sexp->term dl-sexp)))
 
-(defmethod print-dup DL-expression [dl-expr, ^java.io.Writer w]
-  (.write w (format "(make-dl-expression (find-dl %s) '%s)"
-                    (language-name (expression-language dl-expr))
-                    (expression-term dl-expr))))
-
 (defmethod print-method DL-expression [dl-expr, ^java.io.Writer w]
   (.write w (str dl-expr)))
 
@@ -206,6 +201,11 @@
     `(make-dl-expression ~language ~(transform expression))))
 
 (add-dl-syntax! 'dl-expression)
+
+(defmethod print-dup DL-expression [dl-expr, ^java.io.Writer w]
+  (.write w (format "(dl-expression (find-dl %s) %s)"
+                    (language-name (expression-language dl-expr))
+                    (pr-str (expression-term dl-expr)))))
 
 (let [known-description-logics (atom {})]
   ;; we deliberately choose a non-weak-hash-map here; if you have any problems with too
@@ -421,7 +421,7 @@
      (DL-definition. target (make-dl-expression language definition-sexp))))
 
 (defmethod print-dup DL-definition [dl-def, ^java.io.Writer w]
-  (.write w (format "(make-dl-definition %s %s)"
+  (.write w (format "(make-dl-definition '%s %s)"
                     (definition-target dl-def)
                     (pr-str (definition-expression dl-def)))))
 
