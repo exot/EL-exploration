@@ -18,9 +18,6 @@
   (toString [this]
     (str 'DL " " (name language-name))))
 
-(defmethod print-method DL [dl, ^java.io.Writer w]
-  (.write w (str dl)))
-
 (defn dl?
   "Tests whether `something' is a description logic or not."
   [something]
@@ -75,9 +72,6 @@
   (toString [this]
     (print-str sexp)))
 
-(defmethod print-method DL-expression [dl-expr, ^java.io.Writer w]
-  (.write w (str dl-expr)))
-
 (defn make-dl-expression-nc
   "Creates a DL expression without any checks on already present DL
   expression. Use with care."
@@ -118,6 +112,14 @@
   a DL-expression."
   [language dl-sexp]
   (make-dl-expression-nc language (dl-sexp->term dl-sexp)))
+
+(defmethod print-dup DL-expression [dl-expr, ^java.io.Writer w]
+  (.write w (format "(make-dl-expression (find-dl %s) '%s)"
+                    (language-name (expression-language dl-expr))
+                    (expression-term dl-expr))))
+
+(defmethod print-method DL-expression [dl-expr, ^java.io.Writer w]
+  (.write w (str dl-expr)))
 
 ;;;
 
@@ -205,34 +207,52 @@
 
 (add-dl-syntax! 'dl-expression)
 
-(defn make-dl
-  "Constructs a description logic from the given arguments."
-  [name concepts roles constr & {:keys [extends]}]
-  (when-let [invalid (first (filter #(not (Character/isUpperCase ^Character (first (str %))))
-                                    (concat concepts roles)))]
-    (illegal-argument "Invalid Concept or Role name \"" invalid "\". "
-                      "Concept and role names must start with a capital letter. (sorry for that)"))
+(let [known-description-logics (atom {})]
+  ;; we deliberately choose a non-weak-hash-map here; if you have any problems with too
+  ;; many logics filling your memory, please drop me a line
 
-  (when (not (empty? (intersection (set concepts) (set roles))))
-    (illegal-argument "Concept and role names must be disjoint."))
+  (defn make-dl
+    "Constructs a description logic from the given arguments."
+    [name concepts roles constr & {:keys [extends]}]
+    (when (contains? @known-description-logics name)
+      (illegal-argument "A description logic with name «" name "» is already known"))
+    (when-let [invalid (first (filter #(not (Character/isUpperCase ^Character (first (str %))))
+                                      (concat concepts roles)))]
+      (illegal-argument "Invalid Concept or Role name \"" invalid "\". "
+                        "Concept and role names must start with a capital letter. (sorry for that)"))
 
-  (let [base-lang     extends,
+    (when (not (empty? (intersection (set concepts) (set roles))))
+      (illegal-argument "Concept and role names must be disjoint."))
 
-        disjoint-into (fn [sqn other-sqn]
-                        (when-let [x (first (filter (fn [a] (some #(= % a) sqn)) other-sqn))]
-                          (illegal-argument "Item «" x "» already defined in base language."))
-                        (into sqn other-sqn)),
+    (let [base-lang     extends,
 
-        concepts      (disjoint-into concepts (and base-lang (concept-names base-lang)))
-        roles         (disjoint-into roles    (and base-lang (role-names base-lang)))
-        constr        (disjoint-into constr   (and base-lang (constructors base-lang))),
+          disjoint-into (fn [sqn other-sqn]
+                          (when-let [x (first (filter (fn [a] (some #(= % a) sqn)) other-sqn))]
+                            (illegal-argument "Item «" x "» already defined in base language."))
+                          (into sqn other-sqn)),
 
-        language      (make-language name concepts roles constr)]
+          concepts      (disjoint-into concepts (and base-lang (concept-names base-lang)))
+          roles         (disjoint-into roles    (and base-lang (role-names base-lang)))
+          constr        (disjoint-into constr   (and base-lang (constructors base-lang))),
 
-    (when base-lang
-      (derive (language-name language) (language-name base-lang)))
+          language      (make-language name concepts roles constr)]
 
-    language))
+      (when base-lang
+        (derive (language-name language) (language-name base-lang)))
+
+      ;; we remember both names, since the initial name is changed by the DL constructor
+      (swap! known-description-logics assoc name language)
+      (swap! known-description-logics assoc (language-name language) language)
+
+      language))
+
+  (defn find-dl
+    "Returns the description logic corresponding to the given name, returning nil if no
+  such dl exists."
+    [name]
+    (get @known-description-logics name nil))
+
+  nil)
 
 (defn base-language
   "Returns the name of the base language of the give description logics, i.e. the logic
@@ -244,7 +264,8 @@
     (let [ancs (ancestors name)]
       (cond
        (empty? ancs)
-       name
+       (when (not= name (language-name language))
+         (find-dl name))
        ;;
        (singleton? ancs)
        (recur (first ancs))
@@ -259,19 +280,30 @@
      (def ~name dl#)
      dl#))
 
-(defn dump-dl
-  "Returns a string that serves as a serialization of the given description logic"
-  [dl]
-  (with-out-str
-    (print "(define-dl" (name (language-name dl)) "\n")
-    (print " " (concept-names dl)                 "\n")
-    (print " " (role-names dl)                    "\n")
-    (print " " (constructors dl))
-    (let [derivees (parents (language-name dl))]
-      (assert (<= (count derivees) 1))
-      (when (seq derivees)
-        (print "\n  :extends" (name (first derivees)))))
-    (print ")")))
+(defmethod print-dup DL [dl, ^java.io.Writer w]
+  (let [base-language    (base-language dl),
+        dl-name          (language-name dl),
+        dl-concepts      (difference (set (concept-names dl))
+                                     (and base-language (set (concept-names base-language))))
+        dl-roles         (difference (set (role-names dl))
+                                     (and base-language (set (role-names base-language))))
+        dl-constructors  (difference (set (constructors dl))
+                                     (and base-language (set (constructors base-language))))]
+    (.write w (if base-language
+                (format "(make-dl '%s '%s '%s '%s :extends (find-dl %s))"
+                        dl-name
+                        dl-concepts
+                        dl-roles
+                        dl-constructors
+                        (language-name base-language))
+                (format "(make-dl '%s '%s '%s '%s)"
+                        dl-name
+                        dl-concepts
+                        dl-roles
+                        dl-constructors)))))
+
+(defmethod print-method DL [dl, ^java.io.Writer w]
+  (.write w (str dl)))
 
 ;;;
 
@@ -369,9 +401,6 @@
   (toString [this]
     (str target " := " dl-expression)))
 
-(defmethod print-method DL-definition [dl-def, ^java.io.Writer w]
-  (.write w (str dl-def)))
-
 (defn definition-target
   "Returns target of this definition."
   [^DL-definition definition]
@@ -391,15 +420,20 @@
   ([language target definition-sexp]
      (DL-definition. target (make-dl-expression language definition-sexp))))
 
+(defmethod print-dup DL-definition [dl-def, ^java.io.Writer w]
+  (.write w (format "(make-dl-definition %s %s)"
+                    (definition-target dl-def)
+                    (pr-str (definition-expression dl-def)))))
+
+(defmethod print-method DL-definition [dl-def, ^java.io.Writer w]
+  (.write w (str dl-def)))
+
 ;;; General Concept Inclusions
 
 (defrecord DL-subsumption [subsumee subsumer]
   Object
   (toString [this]
     (str "(gci " subsumee " " subsumer ")")))
-
-(defmethod print-method DL-subsumption [sub, ^java.io.Writer w]
-  (.write w (str sub)))
 
 (defn subsumee
   "Returns the subsumee of the given subsumption."
@@ -420,8 +454,11 @@
 (defn make-subsumption
   "Creates and returns a subsumption."
   [C D]
-  (when-not (and (dl-expression? C) (dl-expression? D))
-    (illegal-argument "Arguments to make-subsumption must be DL-expressions."))
+  (assert (and (dl-expression? C) (dl-expression? D))
+          (illegal-argument "Arguments to `make-subsumption' must be DL-expressions."))
+  (assert (= (expression-language C) (expression-language D))
+          (illegal-argument "Arguments to `make-subsumption' must be formulated in the "
+                            "same description logic."))
   (DL-subsumption. C D))
 
 (defalias make-gci make-subsumption)
@@ -437,6 +474,15 @@
 (defalias gci subsumption)
 
 (add-dl-syntax! 'gci)
+
+(defmethod print-dup DL-subsumption [sub, ^java.io.Writer w]
+  (.write w (format "(gci (find-dl %s) %s %s)"
+                    (language-name (expression-language (subsumee sub)))
+                    (pr-str (subsumee sub))
+                    (pr-str (subsumer sub)))))
+
+(defmethod print-method DL-subsumption [sub, ^java.io.Writer w]
+  (.write w (str sub)))
 
 ;;;
 
