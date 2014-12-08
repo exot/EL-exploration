@@ -31,45 +31,47 @@
         (println cnts))
       (empty? cnts))
     ;;
-    x/paper-model 3 (with-dl (make-dl (gensym)
-                                      '[Male Female Mother Father]
-                                      '[HasChild]
-                                      '[]
-                                      :extends EL)
-                      (list (subsumption (and Female Male)
-                                         (bottom))
-                            (subsumption Mother
-                                         (and Female (exists HasChild (and))))
-                            (subsumption Father
-                                         (and (exists HasChild (and)) Male))
-                            (subsumption (and (exists HasChild (and)) Female)
-                                         Mother)
-                            (subsumption (and (exists HasChild (and)) Male)
-                                         Father)
-                            (subsumption (and (exists HasChild (and Female))
-                                              (exists HasChild (and Male)))
-                                         (bottom))
-                            (subsumption (and (exists HasChild (and (exists HasChild (and)))))
-                                         (bottom)))),
+    x/paper-model 3 (let [my-dl (make-dl (gensym)
+                                         '[Male Female Mother Father]
+                                         '[HasChild]
+                                         '[]
+                                         :extends EL)]
+                      (with-dl my-dl
+                        (list (subsumption (and Female Male)
+                                           (bottom))
+                              (subsumption Mother
+                                           (and Female (exists HasChild (and))))
+                              (subsumption Father
+                                           (and (exists HasChild (and)) Male))
+                              (subsumption (and (exists HasChild (and)) Female)
+                                           Mother)
+                              (subsumption (and (exists HasChild (and)) Male)
+                                           Father)
+                              (subsumption (and (exists HasChild (and Female))
+                                                (exists HasChild (and Male)))
+                                           (bottom))
+                              (subsumption (and (exists HasChild (and (exists HasChild (and)))))
+                                           (bottom))))),
     ;;
-    x/small-model 3 (with-dl (make-dl (gensym)
-                                      '[Male Female Mother Father]
-                                      '[HasChild]
-                                      '[]
-                                      :extends EL)
-                      (list (subsumption Male Father)
-                            (subsumption Mother
-                                         (and (exists HasChild Female) Female))
-                            (subsumption Father
-                                         (and Male))
-                            (subsumption (exists HasChild (and))
-                                         (exists HasChild Female))
-                            (subsumption (and (exists HasChild (and)) Female)
-                                         Mother)
-                            (subsumption (and Father Mother)
-                                         (bottom))
-                            (subsumption (exists HasChild (and (exists HasChild (and Female))))
-                                         (bottom))))
+    x/small-model 3 (let [my-dl (make-dl (gensym)
+                                         '[Male Female Mother Father]
+                                         '[HasChild]
+                                         '[]
+                                         :extends EL)]
+                      (with-dl my-dl
+                        (list (subsumption Male Father)
+                              (subsumption Mother
+                                           (and (exists HasChild Female) Female))
+                              (subsumption Father
+                                           (and Male))
+                              (subsumption (exists HasChild (and))
+                                           (exists HasChild Female))
+                              (subsumption (and (exists HasChild (and)) Female)
+                                           Mother)
+                              (subsumption (and Father Mother)
+                                           (bottom))
+                              (subsumption (exists HasChild (and (exists HasChild (and Female))))
+                                           (bottom)))))
     ;;
     ))
 
