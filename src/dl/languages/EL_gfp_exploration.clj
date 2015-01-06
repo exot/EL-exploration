@@ -41,27 +41,22 @@
 (defn essential-concept-descriptions
   "Returns the list of all \"essential concept descriptions\" (the set M_{\\mathcal{I}}) of
   the given interpretation."
-  [interpretation]
+  [language interpretation]
   (with-memoized-fns [EL-expression->rooted-description-graph,
                       EL-gfp-mmsc,
                       interpretation->tbox,
                       interpretation->description-graph]
     (let [i    interpretation,
-          lang (make-dl (gensym "DL-")
-                        (interpretation-concept-names i)
-                        (interpretation-role-names i)
-                        '[]
-                        :extends EL-gfp),
-          M_I  (concat (list (make-dl-expression lang '(bottom)))
-                       (map #(make-dl-expression lang %)
-                            (concept-names lang))
+          M_I  (concat (list (make-dl-expression language '(bottom)))
+                       (map #(make-dl-expression language %)
+                            (concept-names language))
                        (mapcat (fn [objs]
-                                 (let [msc (expression-term (EL-gfp-mmsc lang i objs))]
-                                   (for [r (role-names lang)]
-                                     (make-dl-expression lang (list 'exists r msc)))))
+                                 (let [msc (expression-term (EL-gfp-mmsc language i objs))]
+                                   (for [r (role-names language)]
+                                     (make-dl-expression language (list 'exists r msc)))))
                                (drop-while empty?
                                            (all-closed-sets (seq (interpretation-base-set i))
-                                                            #(interpret i (EL-gfp-mmsc lang i %))))))]
+                                                            #(interpret i (EL-gfp-mmsc language i %))))))]
       (doall M_I))))
 
 ;;; actual exploration algorithm
@@ -178,7 +173,7 @@
                             (interpretation-role-names model)
                             '[]
                             :extends EL-gfp),
-          M_i      (essential-concept-descriptions model),
+          M_i      (essential-concept-descriptions language model),
           K        (induced-context M_i model),
           S        (canonical-base-from-base
                     (set-of (impl C ==> D) | C M_i, D M_i, :when (subsumed-by? C D)))
