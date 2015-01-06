@@ -55,7 +55,7 @@
                    (let [[tree-2 root-2] (EL-concept-description->description-tree concept-description)]
                      [(graph-product tree-1 tree-2 [root-1 root-2]),
                       [root-1 root-2]]))
-                 concepts)]
+                 (vec concepts))]
      (description-tree->EL-concept-description language product root))))
 
 (defn EL-mmsc-with-role-depth-bound
