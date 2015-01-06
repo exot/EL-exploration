@@ -49,7 +49,7 @@
   (if (empty? concepts)
    (make-dl-expression language '(bottom))
    (let [[product root]
-         (r/fold 128
+         (r/fold 32
                  (fn
                    ([] [(make-description-graph [1]
                                                 {1 (set-of [r 1] | r (role-names language))}
