@@ -73,11 +73,11 @@
   [language d model objects]
   (let [interpretation-graph (interpretation->description-graph model)]
     (EL-lcs language
-            (map (fn [x]
-                   (apply description-tree->EL-concept-description
-                          language
-                          (prune-description-graph d interpretation-graph x)))
-                 objects))))
+            (pmap (fn [x]
+                    (apply description-tree->EL-concept-description
+                           language
+                           (prune-description-graph d interpretation-graph x)))
+                  objects))))
 
 ;;;
 
