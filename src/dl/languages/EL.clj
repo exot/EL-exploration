@@ -37,6 +37,12 @@
 
 ;;; lcs and mmsc
 
+(defn- cleanup-rooted-description-graph [language graph root]
+  (let [tbox          (description-graph->tbox graph language)
+        [tbox target] (uniquify-ttp [tbox root])
+        graph         (tbox->description-graph tbox)]
+    [graph target]))
+
 (defn EL-lcs
   "Returns the least common subsumer in EL of all concept descriptions in `concepts'."
   [language concepts]
@@ -49,10 +55,8 @@
                                                 {1 (concept-names language)})
                         1])
                    ([[tree-1 root-1] [tree-2 root-2]]
-                    (let [[tree-1 root-1] (EL-concept-description->description-tree
-                                           (description-tree->EL-concept-description language tree-1 root-1))
-                          [tree-2 root-2] (EL-concept-description->description-tree
-                                           (description-tree->EL-concept-description language tree-2 root-2))]
+                    (let [[tree-1 root-1] (cleanup-rooted-description-graph language tree-1 root-1)
+                          [tree-2 root-2] (cleanup-rooted-description-graph language tree-2 root-2)]
                       [(graph-product tree-1 tree-2 [root-1 root-2])
                        [root-1 root-2]])))
                  (fn [[tree-1 root-1] concept-description]
