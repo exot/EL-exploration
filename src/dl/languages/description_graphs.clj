@@ -466,36 +466,40 @@
   "Returns the product of the two description graphs given. Returns the directed connected component
   of the graph product containing node, if given."
   ([graph-1 graph-2]
-     (let [vertices      (cross-product (vertices graph-1)
-                                        (vertices graph-2)),
-           neighbours    (fn [[A B]]
-                           (set-of [r [C D]] [[r C] ((neighbours graph-1) A),
-                                              [s D] ((neighbours graph-2) B),
-                                              :when (= r s)])),
-           vertex-labels (fn [[A B]]
-                           (intersection ((vertex-labels graph-1) A)
-                                         ((vertex-labels graph-2) B)))]
-       (make-description-graph vertices neighbours vertex-labels)))
+   (let [vertices      (cross-product (vertices graph-1)
+                                      (vertices graph-2)),
+         neighbours    (map-by-fn (fn [[A B]]
+                                    (set-of [r [C D]] [[r C] ((neighbours graph-1) A),
+                                                       [s D] ((neighbours graph-2) B),
+                                                       :when (= r s)]))
+                                  vertices),
+         vertex-labels (map-by-fn (fn [[A B]]
+                                    (intersection ((vertex-labels graph-1) A)
+                                                  ((vertex-labels graph-2) B)))
+                                  vertices)]
+     (make-description-graph vertices neighbours vertex-labels)))
   ([graph-1 graph-2 node]
-     (let [vertices      (loop [verts #{node},
-                                newvs #{node}]
-                           (if (empty? newvs)
-                             verts
-                             (let [nextvs (set-of [v w] | [x y] newvs
-                                                          [r v] ((neighbours graph-1) x)
-                                                          [s w] ((neighbours graph-2) y)
-                                                          :when (= r s))]
-                               (recur (into verts nextvs)
-                                      (difference nextvs verts))))),
+   (let [vertices      (loop [verts #{node},
+                              newvs #{node}]
+                         (if (empty? newvs)
+                           verts
+                           (let [nextvs (set-of [v w] | [x y] newvs
+                                                [r v] ((neighbours graph-1) x)
+                                                [s w] ((neighbours graph-2) y)
+                                                :when (= r s))]
+                             (recur (into verts nextvs)
+                                    (difference nextvs verts))))),
 
-           neighbours    (fn [[A B]]
-                           (set-of [r [C D]] [[r C] ((neighbours graph-1) A),
-                                              [s D] ((neighbours graph-2) B),
-                                              :when (= r s)])),
-           vertex-labels (fn [[A B]]
-                           (intersection ((vertex-labels graph-1) A)
-                                         ((vertex-labels graph-2) B)))]
-       (make-description-graph vertices neighbours vertex-labels))))
+         neighbours    (map-by-fn (fn [[A B]]
+                                    (set-of [r [C D]] [[r C] ((neighbours graph-1) A),
+                                                       [s D] ((neighbours graph-2) B),
+                                                       :when (= r s)]))
+                                  vertices),
+         vertex-labels (map-by-fn (fn [[A B]]
+                                    (intersection ((vertex-labels graph-1) A)
+                                                  ((vertex-labels graph-2) B)))
+                                  vertices)]
+     (make-description-graph vertices neighbours vertex-labels))))
 
 (defn description-graph-component
   "Returns the directed connected component of desgraph containing node."
