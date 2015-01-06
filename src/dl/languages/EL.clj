@@ -39,7 +39,11 @@
 
 (defn- cleanup-rooted-description-graph [language graph root]
   (let [tbox          (description-graph->tbox graph language)
-        [tbox target] (uniquify-ttp [tbox root])
+        [tbox target] (-> [tbox root]
+                          uniquify-ttp
+                          clarify-ttp
+                          tidy-up-ttp
+                          reduce-ttp)
         graph         (tbox->description-graph tbox)]
     [graph target]))
 
