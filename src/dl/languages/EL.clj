@@ -13,7 +13,8 @@
         dl.framework.semantics
         dl.framework.boxes
         dl.framework.reasoning
-        dl.languages.description-graphs))
+        dl.languages.description-graphs)
+  (:require [clojure.core.reducers :as r]))
 
 ;;; EL
 
@@ -42,12 +43,19 @@
   (if (empty? concepts)
    (make-dl-expression language '(bottom))
    (let [[product root]
-         (reduce (fn [[product-tree product-root] concept-description]
-                   (let [[tree root] (EL-concept-description->description-tree concept-description)]
-                     [(graph-product product-tree tree [product-root root]),
-                      [product-root root]]))
-                 (EL-concept-description->description-tree (first concepts))
-                 (rest concepts))]
+         (r/fold (fn
+                   ([] [(make-description-graph [1]
+                                                {1 (set-of [r 1] | r (role-names language))}
+                                                {1 (concept-names language)})
+                        1])
+                   ([[tree-1 root-1] [tree-2 root-2]]
+                    [(graph-product tree-1 tree-2 [root-1 root-2])
+                     [root-1 root-2]]))
+                 (fn [[tree-1 root-1] concept-description]
+                   (let [[tree-2 root-2] (EL-concept-description->description-tree concept-description)]
+                     [(graph-product tree-1 tree-2 [root-1 root-2]),
+                      [root-1 root-2]]))
+                 concepts)]
      (description-tree->EL-concept-description language product root))))
 
 (defn EL-mmsc-with-role-depth-bound
