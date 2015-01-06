@@ -47,13 +47,16 @@
         graph         (tbox->description-graph tbox)]
     [graph target]))
 
+(def ^:dynamic *lcs-folding* "Parameter to control folding in EL-lcs"
+  32)
+
 (defn EL-lcs
   "Returns the least common subsumer in EL of all concept descriptions in `concepts'."
   [language concepts]
   (if (empty? concepts)
    (make-dl-expression language '(bottom))
    (let [[product root]
-         (r/fold 32
+         (r/fold *lcs-folding*
                  (fn
                    ([] [(make-description-graph [1]
                                                 {1 (set-of [r 1] | r (role-names language))}
