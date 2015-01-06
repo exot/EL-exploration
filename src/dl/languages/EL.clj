@@ -49,8 +49,12 @@
                                                 {1 (concept-names language)})
                         1])
                    ([[tree-1 root-1] [tree-2 root-2]]
-                    [(graph-product tree-1 tree-2 [root-1 root-2])
-                     [root-1 root-2]]))
+                    (let [[tree-1 root-1] (EL-concept-description->description-tree
+                                           (description-tree->EL-concept-description language tree-1 root-1))
+                          [tree-2 root-2] (EL-concept-description->description-tree
+                                           (description-tree->EL-concept-description language tree-2 root-2))]
+                      [(graph-product tree-1 tree-2 [root-1 root-2])
+                       [root-1 root-2]])))
                  (fn [[tree-1 root-1] concept-description]
                    (let [[tree-2 root-2] (EL-concept-description->description-tree concept-description)]
                      [(graph-product tree-1 tree-2 [root-1 root-2]),
