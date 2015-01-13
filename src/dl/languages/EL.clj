@@ -54,25 +54,23 @@
   "Returns the least common subsumer in EL of all concept descriptions in `concepts'."
   [language concepts]
   (if (empty? concepts)
-   (make-dl-expression language '(bottom))
-   (let [[product root]
-         (r/fold *lcs-folding*
-                 (fn
-                   ([] [(make-description-graph [1]
-                                                {1 (set-of [r 1] | r (role-names language))}
-                                                {1 (concept-names language)})
-                        1])
-                   ([[tree-1 root-1] [tree-2 root-2]]
-                    (let [[tree-1 root-1] (cleanup-rooted-description-graph language tree-1 root-1)
-                          [tree-2 root-2] (cleanup-rooted-description-graph language tree-2 root-2)]
-                      [(graph-product tree-1 tree-2 [root-1 root-2])
-                       [root-1 root-2]])))
-                 (fn [[tree-1 root-1] concept-description]
-                   (let [[tree-2 root-2] (EL-concept-description->description-tree concept-description)]
-                     [(graph-product tree-1 tree-2 [root-1 root-2]),
-                      [root-1 root-2]]))
-                 (vec concepts))]
-     (description-tree->EL-concept-description language product root))))
+    (make-dl-expression language '(bottom))
+    (let [ ;; reducer function for r/fold
+          reducef       (fn
+                          ;; neutral tree
+                          ([] [(make-description-graph [1]
+                                                       {1 (set-of [r 1] | r (role-names language))}
+                                                       {1 (concept-names language)})
+                               1])
+                          ;; cleanup and product of intermediate results
+                          ([[tree-1 root-1] [tree-2 root-2]]
+                           (let [product-tree (graph-product tree-1 tree-2 [root-1 root-2])]
+                             (cleanup-rooted-description-graph language product-tree [root-1 root-2])))),
+          [product root] (r/fold *lcs-folding*
+                                 reducef
+                                 reducef
+                                 (r/map EL-concept-description->description-tree (vec concepts)))]
+      (description-tree->EL-concept-description language product root))))
 
 (defn EL-mmsc-with-role-depth-bound
   "Returns the model based most specific concept in EL of `objects' in `model' with given
