@@ -90,7 +90,7 @@
                                   '[]
                                   :extends EL)
            model-closure (memoize (fn [concept-description]
-                                    (EL-mmsc-with-role-depth-bound language d model
+                                    (EL-mmsc-with-role-depth-bound language (dec d) model
                                                                    (interpret model concept-description)))),
            interpret     (memoize (fn [C]
                                     (interpret model C))),
@@ -168,11 +168,11 @@
 
            ;; else return the result
            (let [implicational-knowledge (union implications background-knowledge)]
-            (for [all-P pseudo-descriptions,
-                  :let [all-P-closure (model-closure all-P)]
-                  :when (not (subsumed-by? all-P all-P-closure))]
-              (abbreviate-subsumption (make-subsumption all-P all-P-closure)
-                                      implicational-knowledge))))))))
+             (for [all-P pseudo-descriptions,
+                   :let [all-P-closure (EL-mmsc-with-role-depth-bound language d model (interpret all-P))]
+                   :when (not (subsumed-by? all-P all-P-closure))]
+               (abbreviate-subsumption (make-subsumption all-P all-P-closure)
+                                       implicational-knowledge))))))))
 
 ;;;
 
