@@ -42,7 +42,7 @@
   "Returns the list of all “essential concept descriptions of given role-depth” (the set
   M_{interpretation,d}) of the given `interpretation'."
   [language d interpretation]
-  (let [mmsc     #(EL-mmsc-with-role-depth-bound language (dec d) interpretation %)]
+  (let [mmsc #(EL-mmsc-with-role-depth-bound language (dec d) interpretation %)]
     (concat (list (make-dl-expression language '(bottom)))
             (map #(make-dl-expression language %)
                  (concept-names language))
@@ -81,7 +81,7 @@
   "Returns a finite base of given interpretation with given role-depth bound."
   ;;
   ([d model]
-     (model-gcis d model (interpretation-concept-names model)))
+   (model-gcis d model (interpretation-concept-names model)))
   ;;
   ([d model initial-ordering]
      (let [language      (make-dl (gensym)
@@ -102,7 +102,7 @@
          (illegal-argument "Given initial-ordering for model-gcis must consist "
                            "of all concept names of the language of the given model."))
 
-       (loop [;; the set of constructed concepts
+       (loop [ ;; the set of constructed concepts
               M                     (map #(dl-expression language %)
                                          (conj initial-ordering '(bottom))),
               ;; the sequence of concept-descriptions defined by pseudo-intents found
@@ -166,7 +166,7 @@
              ;; redo!
              (recur next-M pseudo-descriptions next-P implications background-knowledge))
 
-           ;; else return set of implications
+           ;; else return the result
            (let [implicational-knowledge (union implications background-knowledge)]
             (for [all-P pseudo-descriptions,
                   :let [all-P-closure (model-closure all-P)]
