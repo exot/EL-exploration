@@ -169,7 +169,15 @@
            ;; else return the result
            (let [implicational-knowledge (union implications background-knowledge)]
              (for [all-P pseudo-descriptions,
-                   :let [all-P-closure (EL-mmsc-with-role-depth-bound language d model (interpret all-P))]
+                   :let [all-P-closure (if (empty? (interpret all-P))
+                                         (make-dl-expression language '(bottom))
+                                         (make-dl-expression-nc language
+                                                                (cons 'and
+                                                                      (map expression-term
+                                                                           (filter #(subset? (interpret all-P)
+                                                                                             (interpret %))
+                                                                                   (remove #(= (expression-term %) '(bottom))
+                                                                                           M))))))]
                    :when (not (subsumed-by? all-P all-P-closure))]
                (abbreviate-subsumption (make-subsumption all-P all-P-closure)
                                        implicational-knowledge))))))))

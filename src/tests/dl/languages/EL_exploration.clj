@@ -61,7 +61,7 @@
                       (with-dl my-dl
                         (list (subsumption Male Father)
                               (subsumption Mother
-                                           (and (exists HasChild Female) Female))
+                                           (and (exists HasChild (and)) Female))
                               (subsumption Father
                                            (and Male))
                               (subsumption (exists HasChild (and))
