@@ -12,4 +12,10 @@
 
 (def ^:dynamic *verbose* 0)
 
+(defn debug
+  "If `level' is at least as big as `*verbose*', applies println to `args'."
+  [level & args]
+  (when (<= *verbose* level)
+    (apply println args)))
+
 ;;;
