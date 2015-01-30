@@ -12,7 +12,7 @@
         dl.syntax
         dl.boxes
         dl.semantics
-        dl.util.graphs)
+        util.graphs)
   (:use clojure.pprint)
   (:import [java.util HashMap HashSet]))
 

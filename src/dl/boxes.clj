@@ -9,7 +9,7 @@
 (ns dl.boxes
   (:use conexp.main
         dl.syntax
-        dl.util.graphs))
+        util.graphs))
 
 ;;; TBox definitions
 

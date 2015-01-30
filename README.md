@@ -37,7 +37,7 @@ representing properties, and that wikiinstances.nt contains triples representing
 actual `child`-relation (among others.)  Then you can do
 
 ```clj
-(use 'dl.util.read-rdf-models)
+(use 'util.read-rdf-models)
 
 (def dbpedia-model
   (read-dbpedia-model "wikiprops.nt" "wikiinstances.nt" '[child]))

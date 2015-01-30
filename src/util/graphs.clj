@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.util.graphs
+(ns util.graphs
   "A custom implementation of graph algorithms on top of conexp.util.graph."
   (:use conexp.base)
   (:require [conexp.util.graph :as graph]))
