@@ -9,6 +9,7 @@
 (ns dl.EL.exploration
   "Implements exploration for description logics EL with bounded role-depth."
   (:use conexp.main
+        [util.general :only (debug)]
         dl.syntax
         dl.semantics
         dl.reasoning
@@ -90,6 +91,7 @@
                                 '[]
                                 :extends EL)
          model-closure (memoize (fn [concept-description]
+                                  (debug 3 "Concept: " concept-description)
                                   (EL-mmsc-with-role-depth-bound language (dec d) model
                                                                  (interpret model concept-description)))),
          interpret     (memoize (fn [C]

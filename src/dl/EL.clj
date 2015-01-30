@@ -9,6 +9,7 @@
 (ns dl.EL
   "Definitions for the description logic EL-gfp."
   (:use conexp.main
+        [util.general :only (debug)]
         dl.syntax
         dl.semantics
         dl.boxes
@@ -53,6 +54,7 @@
 (defn EL-lcs
   "Returns the least common subsumer in EL of all concept descriptions in `concepts'."
   [language concepts]
+  (debug 3 "Concepts: " (count concepts))
   (if (empty? concepts)
     (make-dl-expression language '(bottom))
     (let [ ;; reducer function for r/fold
