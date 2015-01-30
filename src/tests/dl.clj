@@ -12,13 +12,13 @@
 ;;;
 
 (tests-to-run tests.dl.semantics
-              tests.dl.languages.description-graphs
-              tests.dl.languages.EL
-              tests.dl.languages.EL-gfp
+              tests.dl.EL.description-graphs
+              tests.dl.EL
+              tests.dl.EL-gfp
               tests.dl.reasoning
-              tests.dl.languages.EL-gfp-rewriting
-              tests.dl.languages.EL-exploration
-              tests.dl.languages.EL-gfp-exploration
+              tests.dl.EL-gfp.rewriting
+              tests.dl.EL.exploration
+              tests.dl.EL-gfp.exploration
               tests.dl.misc)
 
 ;;;

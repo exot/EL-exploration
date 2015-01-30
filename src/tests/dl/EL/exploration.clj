@@ -6,14 +6,14 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.languages.EL-exploration
+(ns tests.dl.EL.exploration
   (:use conexp.main
         dl.syntax
         dl.boxes
         dl.semantics
         dl.reasoning
-        dl.languages.EL
-        dl.languages.EL-exploration)
+        dl.EL
+        dl.EL.exploration)
   (:require [tests.dl.examples :as x])
   (:use clojure.test))
 

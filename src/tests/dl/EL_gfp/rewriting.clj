@@ -6,18 +6,18 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.languages.EL-gfp-rewriting
+(ns tests.dl.EL-gfp.rewriting
   (:use conexp.main
         dl.syntax
         dl.semantics
-        dl.languages.EL-gfp-rewriting
+        dl.EL-gfp.rewriting
         tests.dl.examples)
   (:use clojure.test))
 
 ;;;
 
 (deftest test-minimal-elements
-  (let [me @#'dl.languages.EL-gfp-rewriting/minimal-elements]
+  (let [me @#'dl.EL-gfp.rewriting/minimal-elements]
     (is (= '(1) (me [1 2 3 4 5 6] <)))
     (is (= '(6) (me [1 2 3 4 5 6] >)))
     (is (= '(1) (me [6 4 3 1 3 5] <)))
@@ -25,7 +25,7 @@
     (is (= #{#{1} #{2}} (set (me #{#{1} #{1 2 3} #{2 3} #{2} #{1 3}} subset?))))))
 
 (deftest test-abbreviate-expression
-  (let [ab @#'dl.languages.EL-gfp-rewriting/abbreviate-expression]
+  (let [ab @#'dl.EL-gfp.rewriting/abbreviate-expression]
     (with-dl SimpleDL
       (is (= (ab (dl-expression (and (exists HasChild A)
                                      (exists HasChild B)))

@@ -6,12 +6,12 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.languages.EL-gfp-rewriting
+(ns dl.EL-gfp.rewriting
   "Provides functions for EL-gfp term rewriting."
   (:use conexp.main
         dl.syntax
         dl.boxes
-        dl.languages.description-graphs)
+        dl.EL.description-graphs)
   (:use [clojure.walk :only (walk)]))
 
 ;;; EL and EL-gfp normalization

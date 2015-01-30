@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.languages.EL-gfp-exploration
+(ns dl.EL-gfp.exploration
   "Implements exploration for description logics EL and EL-gfp."
   (:use conexp.main
         dl.syntax
         dl.semantics
         dl.reasoning
-        dl.languages.description-graphs
-        dl.languages.EL-gfp
-        dl.languages.EL-gfp-rewriting))
+        dl.EL.description-graphs
+        dl.EL-gfp
+        dl.EL-gfp.rewriting))
 
 ;;; technical helpers
 

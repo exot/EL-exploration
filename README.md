@@ -14,7 +14,7 @@ interpretation.  If the data itself is not very large, you can do it directly:
 ```clj
 (use 'dl.syntax
      'dl.semantics
-     'dl.languages.EL-gfp)
+     'dl.EL-gfp)
 
 (define-dl SimpleDL [Father Mother Male Female] [HasChild] []
   :extends EL-gfp)
@@ -50,7 +50,7 @@ for more examples on this.
 As soon as you have your interpretation, you can get a base of it like this
 
 ```clj
-(use 'dl.languages.EL-gfp-exploration)
+(use 'dl.EL-gfp.exploration)
 
 (model-gcis some-model)
 (model-gcis dbpedia-model)

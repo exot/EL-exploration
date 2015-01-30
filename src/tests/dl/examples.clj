@@ -13,8 +13,8 @@
         dl.syntax
         dl.boxes
         dl.semantics
-        dl.languages.description-graphs
-        dl.languages.EL-gfp)
+        dl.EL.description-graphs
+        dl.EL-gfp)
   (:use clojure.test))
 
 ;;; Initial Example

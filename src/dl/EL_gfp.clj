@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.languages.EL-gfp
+(ns dl.EL-gfp
   "Definitions for the description logic EL-gfp."
   (:use conexp.main
         dl.syntax
         dl.semantics
         dl.boxes
         dl.reasoning
-        dl.languages.description-graphs
-        dl.languages.EL-gfp-rewriting))
+        dl.EL.description-graphs
+        dl.EL-gfp.rewriting))
 
 ;;; EL-gfp
 

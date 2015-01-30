@@ -6,12 +6,12 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.languages.description-graphs
+(ns tests.dl.EL.description-graphs
   (:use conexp.main
         dl.syntax
         dl.boxes
         dl.semantics
-        dl.languages.description-graphs
+        dl.EL.description-graphs
         [tests.dl.examples :as x])
   (:use clojure.test))
 

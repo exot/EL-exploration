@@ -6,14 +6,14 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.languages.EL
+(ns tests.dl.EL
   (:use conexp.main
         dl.syntax
         dl.boxes
         dl.semantics
         dl.reasoning
-        dl.languages.description-graphs
-        dl.languages.EL)
+        dl.EL.description-graphs
+        dl.EL)
   (:require [tests.dl.examples :as x])
   (:use clojure.test))
 

@@ -6,13 +6,13 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.languages.EL-gfp
+(ns tests.dl.EL-gfp
   (:use conexp.main
         dl.syntax
         dl.boxes
         dl.semantics
-        dl.languages.description-graphs
-        dl.languages.EL-gfp
+        dl.EL.description-graphs
+        dl.EL-gfp
         tests.dl.examples)
   (:use clojure.test))
 
