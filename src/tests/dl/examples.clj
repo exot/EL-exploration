@@ -10,9 +10,9 @@
   "Defines example data for testing and shows how to use this program.
   Don't change anything here since some tests rely on this."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
+        dl.syntax
+        dl.boxes
+        dl.semantics
         dl.languages.description-graphs
         dl.languages.EL-gfp
         dl.languages.interaction)

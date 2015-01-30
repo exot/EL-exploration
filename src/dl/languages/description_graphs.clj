@@ -9,9 +9,9 @@
 (ns dl.languages.description-graphs
   "Implements description graphs and common operations on them."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
+        dl.syntax
+        dl.boxes
+        dl.semantics
         dl.util.graphs)
   (:use clojure.pprint)
   (:import [java.util HashMap HashSet]))

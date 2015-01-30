@@ -6,11 +6,11 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.framework.semantics
+(ns dl.semantics
   "Defines basic notions for semantics of description logics."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes))
+        dl.syntax
+        dl.boxes))
 
 ;;; interpretation definition
 

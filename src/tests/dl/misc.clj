@@ -10,9 +10,9 @@
   "Defines additional test cases, which do not fit into the strict linear setup of the
   basic test cases."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
+        dl.syntax
+        dl.boxes
+        dl.semantics
         tests.dl.examples)
   (:use clojure.test))
 

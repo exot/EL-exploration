@@ -8,8 +8,8 @@
 
 (ns dl.languages.interaction
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.semantics))
+        dl.syntax
+        dl.semantics))
 
 ;;;
 

@@ -8,8 +8,8 @@
 
 (ns tests.dl.languages.EL-gfp-rewriting
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.semantics
+        dl.syntax
+        dl.semantics
         dl.languages.EL-gfp-rewriting
         tests.dl.examples)
   (:use clojure.test))

@@ -9,10 +9,10 @@
 (ns dl.languages.EL
   "Definitions for the description logic EL-gfp."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.semantics
-        dl.framework.boxes
-        dl.framework.reasoning
+        dl.syntax
+        dl.semantics
+        dl.boxes
+        dl.reasoning
         dl.languages.description-graphs)
   (:require [clojure.core.reducers :as r]))
 

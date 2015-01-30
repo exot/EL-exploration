@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.framework.syntax
+(ns dl.syntax
   "Provides basic syntax definitions for DL expressions and the like."
   (:use conexp.main)
   (:use [clojure.walk :only (walk)]))
@@ -52,7 +52,7 @@
 (defn make-language
   "Creates a DL from concept-names, role-names and constructors."
   [name concept-names role-names constructors]
-  (DL. (keyword "dl.framework" (str name))
+  (DL. (keyword "dl." (str name))
        (set concept-names)
        (set role-names)
        (set constructors)))

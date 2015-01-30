@@ -9,9 +9,9 @@
 (ns dl.languages.EL-gfp-exploration
   "Implements exploration for description logics EL and EL-gfp."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.semantics
-        dl.framework.reasoning
+        dl.syntax
+        dl.semantics
+        dl.reasoning
         dl.languages.description-graphs
         dl.languages.EL-gfp
         dl.languages.EL-gfp-rewriting))

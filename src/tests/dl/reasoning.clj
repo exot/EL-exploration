@@ -6,11 +6,11 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.framework.reasoning
+(ns tests.dl.reasoning
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.reasoning
+        dl.syntax
+        dl.boxes
+        dl.reasoning
         tests.dl.examples)
   (:use clojure.test))
 

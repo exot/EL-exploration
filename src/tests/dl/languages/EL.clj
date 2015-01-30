@@ -8,10 +8,10 @@
 
 (ns tests.dl.languages.EL
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
-        dl.framework.reasoning
+        dl.syntax
+        dl.boxes
+        dl.semantics
+        dl.reasoning
         dl.languages.description-graphs
         dl.languages.EL)
   (:require [tests.dl.examples :as x])

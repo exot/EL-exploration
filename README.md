@@ -12,8 +12,8 @@ The main step in using this implementation is in representing your data as an
 interpretation.  If the data itself is not very large, you can do it directly:
 
 ```clj
-(use 'dl.framework.syntax
-     'dl.framework.semantics
+(use 'dl.syntax
+     'dl.semantics
      'dl.languages.EL-gfp)
 
 (define-dl SimpleDL [Father Mother Male Female] [HasChild] []

@@ -11,11 +11,11 @@
 
 ;;;
 
-(tests-to-run tests.dl.framework.semantics
+(tests-to-run tests.dl.semantics
               tests.dl.languages.description-graphs
               tests.dl.languages.EL
               tests.dl.languages.EL-gfp
-              tests.dl.framework.reasoning
+              tests.dl.reasoning
               tests.dl.languages.EL-gfp-rewriting
               tests.dl.languages.EL-exploration
               tests.dl.languages.EL-gfp-exploration

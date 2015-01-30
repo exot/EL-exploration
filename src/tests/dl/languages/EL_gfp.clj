@@ -8,9 +8,9 @@
 
 (ns tests.dl.languages.EL-gfp
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
+        dl.syntax
+        dl.boxes
+        dl.semantics
         dl.languages.description-graphs
         dl.languages.EL-gfp
         tests.dl.examples)

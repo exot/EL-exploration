@@ -9,9 +9,9 @@
 (ns dl.languages.EL-exploration
   "Implements exploration for description logics EL with bounded role-depth."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.semantics
-        dl.framework.reasoning
+        dl.syntax
+        dl.semantics
+        dl.reasoning
         dl.languages.description-graphs
         dl.languages.EL
         dl.languages.EL-gfp-rewriting))

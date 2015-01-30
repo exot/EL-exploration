@@ -8,9 +8,9 @@
 
 (ns tests.dl.languages.description-graphs
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
-        dl.framework.semantics
+        dl.syntax
+        dl.boxes
+        dl.semantics
         dl.languages.description-graphs
         [tests.dl.examples :as x])
   (:use clojure.test))

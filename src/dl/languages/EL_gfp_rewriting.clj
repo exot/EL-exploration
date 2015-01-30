@@ -9,8 +9,8 @@
 (ns dl.languages.EL-gfp-rewriting
   "Provides functions for EL-gfp term rewriting."
   (:use conexp.main
-        dl.framework.syntax
-        dl.framework.boxes
+        dl.syntax
+        dl.boxes
         dl.languages.description-graphs)
   (:use [clojure.walk :only (walk)]))
 
@@ -150,4 +150,3 @@
 ;;;
 
 nil
-
