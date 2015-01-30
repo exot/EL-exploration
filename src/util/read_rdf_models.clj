@@ -17,8 +17,7 @@
   (:use conexp.main
         dl.syntax
         dl.boxes
-        dl.semantics
-        dl.languages.interaction))
+        dl.semantics))
 
 ;;;
 

@@ -14,8 +14,7 @@
         dl.boxes
         dl.semantics
         dl.languages.description-graphs
-        dl.languages.EL-gfp
-        dl.languages.interaction)
+        dl.languages.EL-gfp)
   (:use clojure.test))
 
 ;;; Initial Example
