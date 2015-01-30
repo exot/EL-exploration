@@ -14,10 +14,10 @@ interpretation.  If the data itself is not very large, you can do it directly:
 ```clj
 (use 'dl.syntax
      'dl.semantics
-     'dl.EL-gfp)
+     'dl.EL)
 
 (define-dl SimpleDL [Father Mother Male Female] [HasChild] []
-  :extends EL-gfp)
+  :extends EL)
 
 (def some-model (interpretation '[Father Mother Male Female]
                                 '[HasChild]
@@ -44,13 +44,13 @@ actual `child`-relation (among others.)  Then you can do
 ```
 
 Note however, that this functionality is specific for the data sets from DBpedia.  See
-[read_rdf_models.clj](https://github.com/exot/EL-exploration/blob/master/src/dl/util/read_rdf_models.clj)
+[read_rdf_models.clj](https://github.com/exot/EL-exploration/blob/master/src/util/read_rdf_models.clj)
 for more examples on this.
 
 As soon as you have your interpretation, you can get a base of it like this
 
 ```clj
-(use 'dl.EL-gfp.exploration)
+(use 'dl.EL.exploration)
 
 (model-gcis some-model)
 (model-gcis dbpedia-model)
