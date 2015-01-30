@@ -8,6 +8,8 @@
 
 ;; A program to convert some rdf data sets into models
 
+;; This file is a mess
+
 (ns dl.util.read-rdf-models
   "Utility functions to read DL models some RDF data files"
   (:use [conexp.io.util :only (with-in-reader)]
