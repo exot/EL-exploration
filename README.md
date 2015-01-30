@@ -13,11 +13,7 @@ interpretation.  If the data itself is not very large, you can do it directly:
 
 ```clj
 (use 'dl.syntax
-     'dl.semantics
-     'dl.EL)
-
-(define-dl SimpleDL [Father Mother Male Female] [HasChild] []
-  :extends EL)
+     'dl.semantics)
 
 (def some-model (interpretation '[Father Mother Male Female]
                                 '[HasChild]
@@ -50,11 +46,22 @@ for more examples on this.
 As soon as you have your interpretation, you can get a base of it like this
 
 ```clj
-(use 'dl.EL.exploration)
+(use 'dl.EL-gfp.exploration)
 
 (model-gcis some-model)
 (model-gcis dbpedia-model)
 ```
+
+If you are only interested in bases withing a maximal quantifier depth, you can also do the following
+
+```clj
+(use 'dl.EL.exploration)
+
+(model-gcis d some-model)
+(model-gcis d dbpedia-model)
+```
+
+where `d` is an integer denoting the maximal quantifier depth.
 
 License
 -------
