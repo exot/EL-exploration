@@ -15,7 +15,7 @@
 (defn debug
   "If `level' is at least as big as `*verbose*', applies println to `args'."
   [level & args]
-  (when (<= *verbose* level)
+  (when (<= level *verbose*)
     (apply println args)))
 
 ;;;
