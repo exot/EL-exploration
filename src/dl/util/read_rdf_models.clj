@@ -6,10 +6,10 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-;; A program to convert data from the dbpedia project to DL models
+;; A program to convert some rdf data sets into models
 
 (ns dl.util.read-rdf-models
-  "Utility functions to read DL models from DBpedia data files."
+  "Utility functions to read DL models some RDF data files"
   (:use [conexp.io.util :only (with-in-reader)]
         [clojure.walk :only (walk)])
   (:use conexp.main
