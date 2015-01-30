@@ -15,7 +15,7 @@
   :dependencies [[conexp-clj/conexp-clj "0.0.7-alpha-SNAPSHOT"]]
   :keep-non-project-classes true
   :jvm-opts ["-server", "-Xmx1g"]
-  :global-vars {*warn-on-reflection* true}
+  :global-vars {*warn-on-reflection* false}
   ;:test-paths ["src/tests/"]
   :license "epl-v10"
   :url ""
