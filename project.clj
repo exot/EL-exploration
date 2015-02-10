@@ -14,7 +14,7 @@
   :repositories {"math" "http://www.math.tu-dresden.de/~borch/repos/mvn/"}
   :dependencies [[conexp-clj/conexp-clj "0.0.7-alpha-SNAPSHOT"]]
   :keep-non-project-classes true
-  :jvm-opts ["-server", "-Xmx1g"]
+  :jvm-opts ["-server", "-Xmx4g", "-Xss1g"]
   :global-vars {*warn-on-reflection* false}
   ;:test-paths ["src/tests/"]
   :license "epl-v10"
