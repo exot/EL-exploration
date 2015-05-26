@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.EL-gfp.exploration
+(ns elex.dl.EL-gfp.exploration
   "Implements exploration for description logics EL and EL-gfp."
   (:use conexp.main
-        dl.syntax
-        dl.semantics
-        dl.reasoning
-        dl.EL.description-graphs
-        dl.EL-gfp
-        dl.EL-gfp.rewriting))
+        elex.dl.syntax
+        elex.dl.semantics
+        elex.dl.reasoning
+        elex.dl.EL.description-graphs
+        elex.dl.EL-gfp
+        elex.dl.EL-gfp.rewriting))
 
 ;;; technical helpers
 

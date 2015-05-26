@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.examples
+(ns tests.elex.dl.examples
   "Defines example data for testing and shows how to use this program.
   Don't change anything here since some tests rely on this."
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics
-        dl.EL.description-graphs
-        dl.EL-gfp)
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        elex.dl.EL.description-graphs
+        elex.dl.EL-gfp)
   (:use clojure.test))
 
 ;;; Initial Example

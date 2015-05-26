@@ -6,10 +6,10 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.boxes
+(ns elex.dl.boxes
   (:use conexp.main
-        dl.syntax
-        util.graphs))
+        elex.dl.syntax
+        elex.util.graphs))
 
 ;;; TBox definitions
 

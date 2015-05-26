@@ -6,16 +6,16 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.EL.exploration
+(ns elex.dl.EL.exploration
   "Implements exploration for description logics EL with bounded role-depth."
   (:use conexp.main
-        [util.general :only (debug)]
-        dl.syntax
-        dl.semantics
-        dl.reasoning
-        dl.EL.description-graphs
-        dl.EL
-        dl.EL-gfp.rewriting))
+        [elex.util.general :only (debug)]
+        elex.dl.syntax
+        elex.dl.semantics
+        elex.dl.reasoning
+        elex.dl.EL.description-graphs
+        elex.dl.EL
+        elex.dl.EL-gfp.rewriting))
 
 ;;; technical helpers
 

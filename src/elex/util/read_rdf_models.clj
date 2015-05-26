@@ -10,14 +10,14 @@
 
 ;; This file is a mess
 
-(ns util.read-rdf-models
+(ns elex.util.read-rdf-models
   "Utility functions to read DL models some RDF data files"
   (:use [conexp.io.util :only (with-in-reader)]
         [clojure.walk :only (walk)])
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics))
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics))
 
 ;;;
 

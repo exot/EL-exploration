@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.EL
+(ns tests.elex.dl.EL
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics
-        dl.reasoning
-        dl.EL.description-graphs
-        dl.EL)
-  (:require [tests.dl.examples :as x])
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        elex.dl.reasoning
+        elex.dl.EL.description-graphs
+        elex.dl.EL)
+  (:require [tests.elex.dl.examples :as x])
   (:use clojure.test))
 
 ;;;

@@ -11,7 +11,7 @@
 
 ;;;
 
-(tests-to-run tests.dl)
+(tests-to-run tests.elex.dl)
 
 ;;;
 

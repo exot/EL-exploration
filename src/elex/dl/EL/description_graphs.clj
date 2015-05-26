@@ -6,13 +6,13 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.EL.description-graphs
+(ns elex.dl.EL.description-graphs
   "Implements description graphs and common operations on them."
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics
-        util.graphs)
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        elex.util.graphs)
   (:use clojure.pprint)
   (:import [java.util HashMap HashSet]))
 

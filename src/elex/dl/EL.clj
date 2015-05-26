@@ -6,15 +6,15 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.EL
+(ns elex.dl.EL
   "Definitions for the description logic EL-gfp."
   (:use conexp.main
-        [util.general :only (debug)]
-        dl.syntax
-        dl.semantics
-        dl.boxes
-        dl.reasoning
-        dl.EL.description-graphs)
+        [elex.util.general :only (debug)]
+        elex.dl.syntax
+        elex.dl.semantics
+        elex.dl.boxes
+        elex.dl.reasoning
+        elex.dl.EL.description-graphs)
   (:require [clojure.core.reducers :as r]))
 
 ;;; EL

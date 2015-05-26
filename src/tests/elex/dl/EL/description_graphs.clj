@@ -6,13 +6,13 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.EL.description-graphs
+(ns tests.elex.dl.EL.description-graphs
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics
-        dl.EL.description-graphs
-        [tests.dl.examples :as x])
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        elex.dl.EL.description-graphs
+        [tests.elex.dl.examples :as x])
   (:use clojure.test))
 
 ;;;
@@ -109,7 +109,7 @@
                     (EL-concept-description->description-tree
                      (description-tree->EL-concept-description simple-dl sample-dl-graph x)))
              (description-tree->EL-concept-description simple-dl sample-dl-graph x))))
-    (is (= (make-dl-expression tests.dl.examples/SimpleDL '(and))
+    (is (= (make-dl-expression tests.elex.dl.examples/SimpleDL '(and))
            (apply description-tree->EL-concept-description
                   x/SimpleDL
                   (EL-concept-description->description-tree

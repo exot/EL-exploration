@@ -6,11 +6,11 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns dl.semantics
+(ns elex.dl.semantics
   "Defines basic notions for semantics of description logics."
   (:use conexp.main
-        dl.syntax
-        dl.boxes))
+        elex.dl.syntax
+        elex.dl.boxes))
 
 ;;; interpretation definition
 

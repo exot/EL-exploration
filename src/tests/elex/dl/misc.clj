@@ -6,14 +6,14 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.dl.misc
+(ns tests.elex.dl.misc
   "Defines additional test cases, which do not fit into the strict linear setup of the
   basic test cases."
   (:use conexp.main
-        dl.syntax
-        dl.boxes
-        dl.semantics
-        tests.dl.examples)
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        tests.elex.dl.examples)
   (:use clojure.test))
 
 ;;;
