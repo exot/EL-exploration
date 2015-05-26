@@ -12,8 +12,8 @@ The main step in using this implementation is in representing your data as an
 interpretation.  If the data itself is not very large, you can do it directly:
 
 ```clj
-(use 'dl.syntax
-     'dl.semantics)
+(use 'elex.dl.syntax
+     'elex.dl.semantics)
 
 (def some-model (interpretation '[Father Mother Male Female]
                                 '[HasChild]
@@ -33,20 +33,20 @@ representing properties, and that wikiinstances.nt contains triples representing
 actual `child`-relation (among others.)  Then you can do
 
 ```clj
-(use 'util.read-rdf-models)
+(use 'elex.util.read-rdf-models)
 
 (def dbpedia-model
   (read-dbpedia-model "wikiprops.nt" "wikiinstances.nt" '[child]))
 ```
 
 Note however, that this functionality is specific for the data sets from DBpedia.  See
-[read_rdf_models.clj](https://github.com/exot/EL-exploration/blob/master/src/util/read_rdf_models.clj)
+[read_rdf_models.clj](https://github.com/exot/EL-exploration/blob/master/src/elex/util/read_rdf_models.clj)
 for more examples on this.
 
 As soon as you have your interpretation, you can get a base of it like this
 
 ```clj
-(use 'dl.EL-gfp.exploration)
+(use 'elex.dl.EL-gfp.exploration)
 
 (model-gcis some-model)
 (model-gcis dbpedia-model)
@@ -55,7 +55,7 @@ As soon as you have your interpretation, you can get a base of it like this
 If you are only interested in bases withing a maximal quantifier depth, you can also do the following
 
 ```clj
-(use 'dl.EL.exploration)
+(use 'elex.dl.EL.exploration)
 
 (model-gcis d some-model)
 (model-gcis d dbpedia-model)
