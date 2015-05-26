@@ -11,7 +11,15 @@
 
 ;;;
 
-(tests-to-run tests.elex.dl)
+(tests-to-run tests.elex.dl.semantics
+              tests.elex.dl.EL.description-graphs
+              tests.elex.dl.EL
+              tests.elex.dl.EL-gfp
+              tests.elex.dl.reasoning
+              tests.elex.dl.EL-gfp.rewriting
+              tests.elex.dl.EL.exploration
+              tests.elex.dl.EL-gfp.exploration
+              tests.elex.dl.misc)
 
 ;;;
 
