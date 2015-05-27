@@ -12,7 +12,8 @@
   :min-lein-version "1.3.0"
   :description "A prototypical implementation of Distel's EL Exploration Algorithm"
   :repositories {"math" "http://www.math.tu-dresden.de/~borch/repos/mvn/"}
-  :dependencies [[conexp-clj/conexp-clj "0.0.7-alpha-SNAPSHOT"]]
+  :dependencies [[conexp-clj/conexp-clj "0.0.7-alpha-SNAPSHOT"]
+                 [org.apache.jena/jena-core "2.13.0"]]
   :keep-non-project-classes true
   :jvm-opts ["-server", "-Xmx4g", "-Xss1g"]
   :global-vars {*warn-on-reflection* false}
