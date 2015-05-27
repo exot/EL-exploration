@@ -280,6 +280,12 @@
      (def ~name dl#)
      dl#))
 
+(defmacro define-dl-once
+  "Like `define-dl', but only if name already denotes another logic."
+  [name & args]
+  `(when-not (find-dl ~(str name))
+     (define-dl ~name ~@args)))
+
 (defmethod print-dup DL [dl, ^java.io.Writer w]
   (let [base-language    (base-language dl),
         dl-name          (language-name dl),

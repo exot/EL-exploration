@@ -19,9 +19,8 @@
 
 ;;; Initial Example
 
-(when-not (find-dl "SimpleDL")
-  (define-dl SimpleDL [Father Mother Male Female] [HasChild] []
-    :extends EL-gfp))
+(define-dl-once SimpleDL
+  [Father Mother Male Female] [HasChild] [] :extends EL-gfp)
 
 (def dl-exp (dl-expression SimpleDL (exists HasChild Male)))
 
@@ -85,9 +84,8 @@ nil
 
 ;;; Fahrräder
 
-(when-not (find-dl "RidingDL")
-  (define-dl RidingDL [Fahrzeug, Fahrrad, Rad, Auto] [HatKomponente] []
-    :extends EL-gfp))
+(define-dl-once RidingDL
+  [Fahrzeug, Fahrrad, Rad, Auto] [HatKomponente] [] :extends EL-gfp)
 
 (def riding-model (interpretation '[Fahrzeug Fahrrad Rad Auto]
                                   '[HatKomponente]
@@ -103,9 +101,8 @@ nil
 
 ;;; Cyclic Example
 
-(when-not (find-dl "FamilyDL")
-  (define-dl FamilyDL [Mother, Female, Father, Male] [MarriedTo, HasChild] []
-    :extends EL-gfp))
+(define-dl-once FamilyDL
+  [Mother, Female, Father, Male] [MarriedTo, HasChild] [] :extends EL-gfp)
 
 (def family-all-cpt (dl-expression FamilyDL
                                    [(tbox FamilyDL
@@ -192,14 +189,13 @@ nil
 
 ;;; Lisp Example
 
-(when-not (find-dl "LispDL")
-  (define-dl LispDL
-    [Assembly, Functional, ObjectOriented, Procedural, Educational,
-     Reflective, StackOriented, Concatenative, Imperative, Lazy,
-     Modular, Meta, Generic, Scripting, Prototyping]
-    [Influenced HasDialect]
-    []
-    :extends EL-gfp))
+(define-dl-once LispDL
+  [Assembly, Functional, ObjectOriented, Procedural, Educational,
+   Reflective, StackOriented, Concatenative, Imperative, Lazy,
+   Modular, Meta, Generic, Scripting, Prototyping]
+  [Influenced HasDialect]
+  []
+  :extends EL-gfp)
 
 (def lisp-model (interpretation (concept-names LispDL)
                                 (role-names LispDL)
