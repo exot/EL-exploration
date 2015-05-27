@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.elex.dl.EL.exploration
+(ns elex.tests.dl.EL.exploration
   (:use conexp.main
         elex.dl.syntax
         elex.dl.boxes
@@ -14,7 +14,7 @@
         elex.dl.reasoning
         elex.dl.EL
         elex.dl.EL.exploration)
-  (:require [tests.elex.dl.examples :as x])
+  (:require [elex.tests.dl.examples :as x])
   (:use clojure.test))
 
 ;;;

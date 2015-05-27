@@ -6,12 +6,12 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.elex.dl.EL-gfp.rewriting
+(ns elex.tests.dl.EL-gfp.rewriting
   (:use conexp.main
         elex.dl.syntax
         elex.dl.semantics
         elex.dl.EL-gfp.rewriting
-        tests.elex.dl.examples)
+        elex.tests.dl.examples)
   (:use clojure.test))
 
 ;;;

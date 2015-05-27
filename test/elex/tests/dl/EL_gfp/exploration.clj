@@ -6,14 +6,14 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.elex.dl.EL-gfp.exploration
+(ns elex.tests.dl.EL-gfp.exploration
   (:use conexp.main
         elex.dl.syntax
         elex.dl.boxes
         elex.dl.semantics
         elex.dl.reasoning
         elex.dl.EL-gfp.exploration
-        tests.elex.dl.examples)
+        elex.tests.dl.examples)
   (:use clojure.test))
 
 ;;;

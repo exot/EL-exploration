@@ -6,12 +6,12 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.elex.dl.semantics
+(ns elex.tests.dl.semantics
   (:use conexp.main
         elex.dl.syntax
         elex.dl.boxes
         elex.dl.semantics
-        tests.elex.dl.examples)
+        elex.tests.dl.examples)
   (:use clojure.test))
 
 ;;;

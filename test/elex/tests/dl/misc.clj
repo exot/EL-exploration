@@ -6,20 +6,22 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests
-  (:use conexp.main))
+(ns elex.tests.dl.misc
+  "Defines additional test cases, which do not fit into the strict linear setup of the
+  basic test cases."
+  (:use conexp.main
+        elex.dl.syntax
+        elex.dl.boxes
+        elex.dl.semantics
+        elex.tests.dl.examples)
+  (:use clojure.test))
 
 ;;;
 
-(tests-to-run tests.elex.dl.semantics
-              tests.elex.dl.EL.description-graphs
-              tests.elex.dl.EL
-              tests.elex.dl.EL-gfp
-              tests.elex.dl.reasoning
-              tests.elex.dl.EL-gfp.rewriting
-              tests.elex.dl.EL.exploration
-              tests.elex.dl.EL-gfp.exploration
-              tests.elex.dl.misc)
+(deftest test-print-dup
+  (are [dl] (= dl (find-dl (language-name dl)))
+       SimpleDL
+       FamilyDL))
 
 ;;;
 

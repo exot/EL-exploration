@@ -6,7 +6,7 @@
 ;; the terms of this license.
 ;; You must not remove this notice, or any other, from this software.
 
-(ns tests.elex.dl.examples
+(ns elex.tests.dl.examples
   "Defines example data for testing and shows how to use this program.
   Don't change anything here since some tests rely on this."
   (:use conexp.main
@@ -19,8 +19,9 @@
 
 ;;; Initial Example
 
-(define-dl SimpleDL [Father Mother Male Female] [HasChild] []
-  :extends EL-gfp)
+(when-not (find-dl "SimpleDL")
+  (define-dl SimpleDL [Father Mother Male Female] [HasChild] []
+    :extends EL-gfp))
 
 (def dl-exp (dl-expression SimpleDL (exists HasChild Male)))
 
@@ -84,8 +85,9 @@ nil
 
 ;;; Fahrräder
 
-(define-dl RidingDL [Fahrzeug, Fahrrad, Rad, Auto] [HatKomponente] []
-  :extends EL-gfp)
+(when-not (find-dl "RidingDL")
+  (define-dl RidingDL [Fahrzeug, Fahrrad, Rad, Auto] [HatKomponente] []
+    :extends EL-gfp))
 
 (def riding-model (interpretation '[Fahrzeug Fahrrad Rad Auto]
                                   '[HatKomponente]
@@ -101,8 +103,9 @@ nil
 
 ;;; Cyclic Example
 
-(define-dl FamilyDL [Mother, Female, Father, Male] [MarriedTo, HasChild] []
-  :extends EL-gfp)
+(when-not (find-dl "FamilyDL")
+  (define-dl FamilyDL [Mother, Female, Father, Male] [MarriedTo, HasChild] []
+    :extends EL-gfp))
 
 (def family-all-cpt (dl-expression FamilyDL
                                    [(tbox FamilyDL
@@ -189,12 +192,14 @@ nil
 
 ;;; Lisp Example
 
-(define-dl LispDL [Assembly, Functional, ObjectOriented, Procedural, Educational,
-                   Reflective, StackOriented, Concatenative, Imperative, Lazy,
-                   Modular, Meta, Generic, Scripting, Prototyping]
-                  [Influenced HasDialect]
-                  []
-                  :extends EL-gfp)
+(when-not (find-dl "LispDL")
+  (define-dl LispDL
+    [Assembly, Functional, ObjectOriented, Procedural, Educational,
+     Reflective, StackOriented, Concatenative, Imperative, Lazy,
+     Modular, Meta, Generic, Scripting, Prototyping]
+    [Influenced HasDialect]
+    []
+    :extends EL-gfp))
 
 (def lisp-model (interpretation (concept-names LispDL)
                                 (role-names LispDL)
